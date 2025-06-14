@@ -1,10 +1,10 @@
 # #
 #   Base › Ubuntu › Docker-compose.yml
-#   
+#
 #   Base docker image for Ubuntu
-#   
+#
 #   @url                  https://github.com/aetherinox/docker-base-ubuntu
-#   
+#
 #   @image:github         ghcr.io/aetherinox/base-ubuntu:latest
 #                         ghcr.io/aetherinox/base-ubuntu:22.04
 #                         ghcr.io/aetherinox/base-ubuntu:noble
@@ -22,7 +22,7 @@ services:
 
     ubuntu-noble:
         container_name: ubuntu-noble
-        image: base-ubuntu:24.04
+        image: ubuntu-base:24.04
         hostname: ubuntu
         environment:
             - TZ=Etc/UTC
@@ -40,7 +40,7 @@ services:
 
 # #
 #   Networks
-#   
+#
 #   docker network create --driver=bridge --subnet=172.18.0.0/16 --gateway=172.18.0.1 traefik
 # #
 

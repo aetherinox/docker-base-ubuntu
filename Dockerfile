@@ -13,21 +13,44 @@ FROM alpine:${ALPINE_VERSION} AS rootfs-stage
 
 # #
 #   arguments
-#   
-#   ARCH              amd64
-#                     arm64
-#   
-#   S6_OVERLAY_ARCH   x86_64
-#                     aarch64
+#
+#   UBUNTU_ARCH         amd64
+#                       arm64
+#
+#   S6_OVERLAY_ARCH     x86_64
+#                       aarch64
 # #
 
 ARG REPO_AUTHOR="aetherinox"
 ARG REPO_NAME="docker-base-alpine"
-ARG ARCH=amd64
-ARG UBUNTU_DISTRO=oci-noble-24.04
+ARG UBUNTU_ARCH="amd64"
+ARG UBUNTU_DISTRO="noble"
+ARG UBUNTU_VERSION="24.04"
 ARG S6_OVERLAY_VERSION="3.2.1.0"
-ARG S6_OVERLAY_ARCH
+ARG S6_OVERLAY_ARCH="x86_64"
 ARG BASHIO_VERSION="0.16.2"
+ARG REGISTRY="local"
+
+# #
+#   detect ubuntu version from distro
+# #
+
+RUN \
+    if [ "${UBUNTU_DISTRO}" = "plucky" ]; then \
+        UBUNTU_VERSION="25.04"; \
+    elif [ "${UBUNTU_DISTRO}" = "oracular" ]; then \
+        UBUNTU_VERSION="24.10"; \
+    elif [ "${UBUNTU_DISTRO}" = "noble" ]; then \
+        UBUNTU_VERSION="24.04"; \
+    elif [ "${UBUNTU_DISTRO}" = "jammy" ]; then \
+        UBUNTU_VERSION="22.04"; \
+    elif [ "${UBUNTU_DISTRO}" = "focal" ]; then \
+        UBUNTU_VERSION="20.04"; \
+    elif [ "${UBUNTU_DISTRO}" = "bionic" ]; then \
+        UBUNTU_VERSION="18.04"; \
+    else \
+        UBUNTU_VERSION="24.04"; \
+    fi
 
 # #
 #   install packages
@@ -47,14 +70,14 @@ RUN \
 # #
 
 RUN \
-    git clone --depth=1 https://git.launchpad.net/cloud-images/+oci/ubuntu-base -b ${UBUNTU_DISTRO} /build && \
+    git clone --depth=1 https://git.launchpad.net/cloud-images/+oci/ubuntu-base -b oci-${UBUNTU_DISTRO}-${UBUNTU_VERSION} /build && \
     cd /build/oci && \
     DIGEST=$(jq -r '.manifests[0].digest[7:]' < index.json) && \
     cd /build/oci/blobs/sha256 && \
     if jq -e '.layers // empty' < "${DIGEST}" >/dev/null 2>&1; then \
         TARBALL=$(jq -r '.layers[0].digest[7:]' < ${DIGEST}); \
     else \
-        MULTIDIGEST=$(jq -r ".manifests[] | select(.platform.architecture == \"${ARCH}\") | .digest[7:]" < ${DIGEST}) && \
+        MULTIDIGEST=$(jq -r ".manifests[] | select(.platform.architecture == \"${UBUNTU_ARCH}\") | .digest[7:]" < ${DIGEST}) && \
         TARBALL=$(jq -r '.layers[0].digest[7:]' < ${MULTIDIGEST}); \
     fi && \
     mkdir /root-out && \
@@ -69,33 +92,33 @@ RUN \
 
 # #
 #   alpine › S6 > add overlay & optional symlinks
-#   
-#   TAR         --xz, -J                      Use xz for compressing or decompressing the archives. See section Creating and Reading 
+#
+#   TAR         --xz, -J                      Use xz for compressing or decompressing the archives. See section Creating and Reading
 #                                                 Compressed Archives.
 #               --get, -x                     Same as ‘--extract’
 #                                             Extracts members from the archive into the file system. See section How to Extract Members
-#                                                 from an Archive. 
+#                                                 from an Archive.
 #               --verbose, -v                 Specifies that tar should be more verbose about the operations it is performing. This
-#                                                 option can be specified multiple times for some operations to increase the amount 
-#                                                 of information displayed. See section Checking tar progress. 
+#                                                 option can be specified multiple times for some operations to increase the amount
+#                                                 of information displayed. See section Checking tar progress.
 #               --file=archive, -f archive    Tar will use the file archive as the tar archive it performs operations on, rather
-#                                                 than tar’s compilation dependent default. See section The ‘--file’ Option. 
+#                                                 than tar’s compilation dependent default. See section The ‘--file’ Option.
 #               --directory=dir, -C           Dir When this option is specified, tar will change its current directory to dir
 #                                                 before performing any operations. When this option is used during archive creation,
-#                                                 it is order sensitive. See section Changing the Working Directory. 
+#                                                 it is order sensitive. See section Changing the Working Directory.
 # #
-        
+
 RUN \
-    if [ "${ARCH}" = "armv7" ]; then \
+    if [ "${UBUNTU_ARCH}" = "armv7" ]; then \
         S6_OVERLAY_ARCH="arm"; \
-    elif [ "${ARCH}" = "i386" ]; then \
+    elif [ "${UBUNTU_ARCH}" = "i386" ]; then \
         S6_OVERLAY_ARCH="i686"; \
-    elif [ "${ARCH}" = "amd64" ]; then \
+    elif [ "${UBUNTU_ARCH}" = "amd64" ]; then \
         S6_OVERLAY_ARCH="x86_64"; \
-    elif [ "${ARCH}" = "arm64" ]; then \
+    elif [ "${UBUNTU_ARCH}" = "arm64" ]; then \
         S6_OVERLAY_ARCH="aarch64"; \
     else \
-        S6_OVERLAY_ARCH="${ARCH}"; \
+        S6_OVERLAY_ARCH="${UBUNTU_ARCH}"; \
     fi \
     \
     && wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" && \
@@ -130,13 +153,13 @@ COPY --from=rootfs-stage /root-out/ /
 # #
 
 ARG REPO_AUTHOR="aetherinox"
-ARG REPO_NAME="docker-ubuntu-base"
+ARG REPO_NAME="docker-base-ubuntu"
 ARG RELEASE
 ARG VERSION
 ARG BUILDDATE
 ARG REGISTRY=local
 ARG GIT_SHA1=0000000000000000000000000000000000000000
-ARG ARCH=amd64
+ARG UBUNTU_ARCH=amd64
 ARG MODS_VERSION="v3"
 ARG PKG_INST_VERSION="v1"
 ARG AETHERXOWN_VERSION="v1"
@@ -146,9 +169,25 @@ ARG WITHCONTENV_VERSION="v1"
 #   scratch › set labels
 # #
 
+LABEL org.opencontainers.image.authors="${REPO_AUTHOR}"
+LABEL org.opencontainers.image.vendor="${REPO_AUTHOR}"
+LABEL org.opencontainers.image.title="Ubuntu (Base) ${UBUNTU_VERSION} (${UBUNTU_DISTRO})"
+LABEL org.opencontainers.image.description="Ubuntu base image with s6-overlay integration"
+LABEL org.opencontainers.image.source="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
+LABEL org.opencontainers.image.repo.1="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
+LABEL org.opencontainers.image.repo.2="https://github.com/thebinaryninja/${REPO_NAME}"
+LABEL org.opencontainers.image.documentation="https://github.com/${REPO_AUTHOR}/${REPO_NAME}/wiki"
+LABEL org.opencontainers.image.url="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.distro="${UBUNTU_DISTRO:-noble}"
+LABEL org.opencontainers.image.architecture="${UBUNTU_ARCH:-amd64}"
+LABEL org.opencontainers.image.ref.name="main"
+LABEL org.opencontainers.image.registry="${REGISTRY:-local}"
+LABEL org.opencontainers.image.release="${RELEASE:-stable}"
 LABEL org.ubuntu.image.maintainers="${REPO_AUTHOR}"
-LABEL org.ubuntu.image.build-version="Version:- ${VERSION} Date:- ${BUILDDATE:-01012025}"
-LABEL org.ubuntu.image.build-architecture="${ARCH:-amd64}"
+LABEL org.ubuntu.image.build-version="Version:- ${VERSION} Date:- ${BUILDDATE:-01012026}"
+LABEL org.ubuntu.image.distro="${UBUNTU_DISTRO:-noble}"
+LABEL org.ubuntu.image.build-architecture="${UBUNTU_ARCH:-amd64}"
 LABEL org.ubuntu.image.build-release="${RELEASE:-stable}"
 LABEL org.ubuntu.image.build-sha1="${GIT_SHA1:-0000000000000000000000000000000000000000}"
 
