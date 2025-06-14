@@ -87,24 +87,40 @@ sys_code="unknown"
 sys_arch="amd64"
 
 # #
+#   distro > alpine
+# #
+
+    if [ -e /etc/alpine-release ]; then
+        sys_os_name=Alpine
+        sys_os_ver=$(cat /etc/alpine-release)
+
+        if [[ -z "${sys_os_name// }" ]]; then
+            sys_os_name=$PRETTY_NAME
+        fi
+
+        if [[ -z "${sys_os_ver// }" ]]; then
+            sys_os_name=$VERSION_ID
+        fi
+
+# #
 #   define > distro
 #       freedesktop.org and systemd
 #       returns distro information.
 # #
 
-    if [ -f /etc/os-release ]; then
+    elif [ -f /etc/os-release ]; then
         . /etc/os-release
         sys_os_name=$NAME
         sys_os_ver=$VERSION
         sys_code=$VERSION_CODENAME
 
-# #
-#   distro > alpine
-# #
+        if [[ -z "${sys_os_name// }" ]]; then
+            sys_os_name=$PRETTY_NAME
+        fi
 
-    elif [ -e /etc/alpine-release ]; then
-        sys_os_name=Alpine
-        sys_os_ver=$(cat /etc/alpine-release)
+        if [[ -z "${sys_os_ver// }" ]]; then
+            sys_os_name=$VERSION_ID
+        fi
 
 # #
 #   distro > linuxbase.org
@@ -182,10 +198,10 @@ printf '%-2s\n' " ${c[greyd]}  also be included within your finished product.  $
 echo -e
 printf '%-2s\n' " ${c[greyd]}  To use this base image in your own project, open your ${c[bluel]}Dockerfile${c[greyd]} and define this image ${c[end]}"
 printf '%-2s\n' " ${c[greyd]}  as your ${c[bluel]}FROM${c[greyd]} instruction by specifying the ${c[bluel]}image:tag${c[greyd]} ${c[end]}"
-printf '%-6s %-30s %-65s\n' "" " ${c[greenl]}Example: ${c[end]}" "${c[bluel]}FROM${c[greyd]} --platform=linux/amd64 ghcr.io/aetherinox/base-ubuntu:latest  ${c[end]}"
+printf '%-6s %-30s %-65s\n' "" " ${c[greenl]}Example: ${c[end]}" "${c[bluel]}FROM${c[greyd]} --platform=linux/amd64 ghcr.io/aetherinox/base-alpine:latest  ${c[end]}"
 echo -e
 printf '%-2s\n' " ${c[greyd]}  For more information about this project; visit the links below.  ${c[end]}"
-printf '%-6s %-30s %-65s\n' "" " ${c[greenl]}Official Repo${c[end]}" "${c[end]}https://github.com/aetherinox/docker-base-ubuntu  ${c[end]}"
+printf '%-6s %-30s %-65s\n' "" " ${c[greenl]}Official Repo${c[end]}" "${c[end]}https://github.com/aetherinox/docker-base-alpine  ${c[end]}"
 echo -e
 printf '%-2s\n' " ${c[greyd]}  If you are using this base to host an application with sensitive information or data, consider  ${c[end]}"
 printf '%-2s\n' " ${c[greyd]}  using Traefik and Authentik to protect this container from outside access.  ${c[end]}"
