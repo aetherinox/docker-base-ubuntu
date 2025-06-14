@@ -621,6 +621,9 @@ jobs:
                       #  tag            add 24.04             ( dispatch only + no dev )
                       type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_VERSION }}
 
+                      #  tag            add noble,jammy,etc   ( dispatch only + no dev )
+                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}
+
                       #  tag            add development       ( dispatch only + only dev )
                       type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == true }},priority=300,prefix=,suffix=,value=development
 
