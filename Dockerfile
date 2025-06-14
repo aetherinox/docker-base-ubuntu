@@ -1,0 +1,299 @@
+# syntax=docker/dockerfile:1
+
+# #
+#   @project        Docker Image - Ubuntu Base
+#   @usage          base image utilized for all docker images using Ubuntu with s6-overlay integration
+#   @arch           amd64
+#   @file           Dockerfile
+#   @repo           https://github.com/aetherinox/docker-ubuntu-base
+# #
+
+ARG ALPINE_VERSION=3.22
+FROM alpine:${ALPINE_VERSION} AS rootfs-stage
+
+# #
+#   arguments
+#   
+#   ARCH              amd64
+#                     arm64
+#   
+#   S6_OVERLAY_ARCH   x86_64
+#                     aarch64
+# #
+
+ARG REPO_AUTHOR="aetherinox"
+ARG REPO_NAME="docker-base-alpine"
+ARG ARCH=amd64
+ARG UBUNTU_DISTRO=oci-noble-24.04
+ARG S6_OVERLAY_VERSION="3.2.1.0"
+ARG S6_OVERLAY_ARCH
+ARG BASHIO_VERSION="0.16.2"
+
+# #
+#   install packages
+# #
+
+RUN \
+    apk add --no-cache \
+        bash \
+        curl \
+        git \
+        jq \
+        tzdata \
+        xz
+
+# #
+#   get base tarball
+# #
+
+RUN \
+    git clone --depth=1 https://git.launchpad.net/cloud-images/+oci/ubuntu-base -b ${UBUNTU_DISTRO} /build && \
+    cd /build/oci && \
+    DIGEST=$(jq -r '.manifests[0].digest[7:]' < index.json) && \
+    cd /build/oci/blobs/sha256 && \
+    if jq -e '.layers // empty' < "${DIGEST}" >/dev/null 2>&1; then \
+        TARBALL=$(jq -r '.layers[0].digest[7:]' < ${DIGEST}); \
+    else \
+        MULTIDIGEST=$(jq -r ".manifests[] | select(.platform.architecture == \"${ARCH}\") | .digest[7:]" < ${DIGEST}) && \
+        TARBALL=$(jq -r '.layers[0].digest[7:]' < ${MULTIDIGEST}); \
+    fi && \
+    mkdir /root-out && \
+    tar xf \
+        ${TARBALL} -C \
+        /root-out && \
+    rm -rf \
+        /root-out/var/log/* \
+        /root-out/home/ubuntu \
+        /root-out/root/{.ssh,.bashrc,.profile} \
+        /build
+
+# #
+#   alpine › S6 > add overlay & optional symlinks
+#   
+#   TAR         --xz, -J                      Use xz for compressing or decompressing the archives. See section Creating and Reading 
+#                                                 Compressed Archives.
+#               --get, -x                     Same as ‘--extract’
+#                                             Extracts members from the archive into the file system. See section How to Extract Members
+#                                                 from an Archive. 
+#               --verbose, -v                 Specifies that tar should be more verbose about the operations it is performing. This
+#                                                 option can be specified multiple times for some operations to increase the amount 
+#                                                 of information displayed. See section Checking tar progress. 
+#               --file=archive, -f archive    Tar will use the file archive as the tar archive it performs operations on, rather
+#                                                 than tar’s compilation dependent default. See section The ‘--file’ Option. 
+#               --directory=dir, -C           Dir When this option is specified, tar will change its current directory to dir
+#                                                 before performing any operations. When this option is used during archive creation,
+#                                                 it is order sensitive. See section Changing the Working Directory. 
+# #
+        
+RUN \
+    if [ "${ARCH}" = "armv7" ]; then \
+        S6_OVERLAY_ARCH="arm"; \
+    elif [ "${ARCH}" = "i386" ]; then \
+        S6_OVERLAY_ARCH="i686"; \
+    elif [ "${ARCH}" = "amd64" ]; then \
+        S6_OVERLAY_ARCH="x86_64"; \
+    elif [ "${ARCH}" = "arm64" ]; then \
+        S6_OVERLAY_ARCH="aarch64"; \
+    else \
+        S6_OVERLAY_ARCH="${ARCH}"; \
+    fi \
+    \
+    && wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" && \
+       tar -C /root-out -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz" && \
+       tar -C /root-out -Jxpf /tmp/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz && \
+    wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch.tar.xz" && \
+       tar -C /root-out -Jxpf /tmp/s6-overlay-symlinks-arch.tar.xz && \
+    wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch.tar.xz" && \
+       tar -C /root-out -Jxpf /tmp/s6-overlay-symlinks-noarch.tar.xz && unlink /root-out/usr/bin/with-contenv
+
+# #
+#   install bashio
+# #
+
+RUN \
+    mkdir -p /usr/src/bashio \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/v${BASHIO_VERSION}.tar.gz" \
+        | tar -xzf - --strip 1 -C /usr/src/bashio \
+    && mv /usr/src/bashio/lib /usr/lib/bashio \
+    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio
+
+# #
+#   scratch
+# #
+
+FROM scratch
+COPY --from=rootfs-stage /root-out/ /
+
+# #
+#   scratch › args
+# #
+
+ARG REPO_AUTHOR="aetherinox"
+ARG REPO_NAME="docker-ubuntu-base"
+ARG RELEASE
+ARG VERSION
+ARG BUILDDATE
+ARG REGISTRY=local
+ARG GIT_SHA1=0000000000000000000000000000000000000000
+ARG ARCH=amd64
+ARG MODS_VERSION="v3"
+ARG PKG_INST_VERSION="v1"
+ARG AETHERXOWN_VERSION="v1"
+ARG WITHCONTENV_VERSION="v1"
+
+# #
+#   scratch › set labels
+# #
+
+LABEL org.ubuntu.image.maintainers="${REPO_AUTHOR}"
+LABEL org.ubuntu.image.build-version="Version:- ${VERSION} Date:- ${BUILDDATE:-01012025}"
+LABEL org.ubuntu.image.build-architecture="${ARCH:-amd64}"
+LABEL org.ubuntu.image.build-release="${RELEASE:-stable}"
+LABEL org.ubuntu.image.build-sha1="${GIT_SHA1:-0000000000000000000000000000000000000000}"
+
+# #
+#   scratch › add cdn > core
+# #
+
+ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/docker-images.${MODS_VERSION}" "/docker-images"
+ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/package-install.${PKG_INST_VERSION}" "/etc/s6-overlay/s6-rc.d/init-mods-package-install/run"
+ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/aetherxown.${AETHERXOWN_VERSION}" "/usr/bin/aetherxown"
+ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/with-contenv.${WITHCONTENV_VERSION}" "/usr/bin/with-contenv"
+
+# #
+#   scratch › env vars
+# #
+
+ARG DEBIAN_FRONTEND="noninteractive"
+ENV HOME="/root" \
+    LANGUAGE="en_US.UTF-8" \
+    LANG="en_US.UTF-8" \
+    TERM="xterm" \
+    S6_CMD_WAIT_FOR_SERVICES_MAXTIME="0" \
+    S6_VERBOSITY=1 \
+    S6_STAGE2_HOOK=/docker-images \
+    VIRTUAL_ENV=/aetherxpy \
+    PATH="/aetherxpy/bin:$PATH"
+
+# #
+#   env variables
+# #
+
+ENV USER0="root"
+ENV USER1="dockerx"
+ENV UUID0=0
+ENV UUID1=999
+ENV GUID0=0
+ENV GUID1=999
+
+# #
+#   scratch › copy sources
+# #
+
+COPY sources.list /etc/apt/
+
+# #
+#   install packages
+# #
+
+RUN \
+    echo "**** Ripped from Ubuntu Docker Logic ****" && \
+    rm -f /etc/apt/sources.list.d/ubuntu.sources && \
+    set -xe && \
+    echo '#!/bin/sh' \
+        > /usr/sbin/policy-rc.d && \
+    echo 'exit 101' \
+        >> /usr/sbin/policy-rc.d && \
+    chmod +x \
+        /usr/sbin/policy-rc.d && \
+    dpkg-divert --local --rename --add /sbin/initctl && \
+    cp -a \
+        /usr/sbin/policy-rc.d \
+        /sbin/initctl && \
+    sed -i \
+        's/^exit.*/exit 0/' \
+        /sbin/initctl && \
+    echo 'force-unsafe-io' \
+        > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup && \
+    echo 'DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' \
+        > /etc/apt/apt.conf.d/docker-clean && \
+    echo 'APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' \
+        >> /etc/apt/apt.conf.d/docker-clean && \
+    echo 'Dir::Cache::pkgcache ""; Dir::Cache::srcpkgcache "";' \
+        >> /etc/apt/apt.conf.d/docker-clean && \
+    echo 'Acquire::Languages "none";' \
+        > /etc/apt/apt.conf.d/docker-no-languages && \
+    echo 'Acquire::GzipIndexes "true"; Acquire::CompressionTypes::Order:: "gz";' \
+        > /etc/apt/apt.conf.d/docker-gzip-indexes && \
+    echo 'Apt::AutoRemove::SuggestsImportant "false";' \
+        > /etc/apt/apt.conf.d/docker-autoremove-suggests && \
+    mkdir -p /run/systemd && \
+    echo 'docker' \
+        > /run/systemd/container && \
+    echo "**** install apt-utils and locales ****" && \
+    apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+        apt-utils \
+        locales && \
+    echo "**** install packages ****" && \
+    apt-get install -y \
+        bash \
+        sudo \
+        nano \
+        ca-certificates \
+        catatonit \
+        coreutils \
+        cron \
+        lsb-release \
+        curl \
+        findutils \
+        iproute2 \
+        git \
+        gnupg \
+        jq \
+        netcat-openbsd \
+        systemd-standalone-sysusers \
+        tzdata && \
+    echo "**** generate locale ****" && \
+    locale-gen en_US.UTF-8 && \
+    echo "**** create dockerx user and make our folders ****" && \
+    useradd --uid ${UUID1} \
+      --user-group \
+      --home /config \
+      --shell /bin/false \
+      ${USER1} && \
+    usermod -aG ${USER1} ${USER1} && \
+        usermod -aG sudo ${USER1} && \
+        usermod -aG users ${USER1} && \
+    mkdir -p \
+        /app \
+        /config \
+        /defaults \
+        /aetherxpy && \
+    echo "**** cleanup ****" && \
+    userdel ubuntu && \
+    mkdir -p /etc/sudoers.d/ && \
+    echo ${USER1} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USER1} && \
+    chmod 0440 /etc/sudoers.d/${USER1} && \
+    update-ca-certificates -f && \
+    apt-get autoremove -yq && \
+    apt-get clean -yq && \
+    rm -rf \
+        /tmp/* \
+        /var/lib/apt/lists/* \
+        /var/tmp/* \
+        /var/log/*
+
+# #
+#   scratch › add local files
+# #
+
+COPY root/ /
+
+# #
+#   scratch › add entrypoint
+# #
+
+ENTRYPOINT ["/init"]

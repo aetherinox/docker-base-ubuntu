@@ -1,0 +1,44 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+# #
+#   Removes users from the base system
+#   
+#   getent group                list groups
+#   getent passwd               list users
+#   id -Gn irc                  list users in group
+#   cut -d: -f1 /etc/passwd     list users
+#   
+#   for user in $(awk -F: '{print $1}' /etc/passwd); do groups $user; done
+# #
+
+removeUsers=(
+    "audio"
+    "backup"
+    "cdrom"
+    "dialout"
+    "dip"
+    "fax"
+    "floppy"
+    "ftp"
+    "games"
+    "irc"
+    "lp"
+    "mail"
+    "man"
+    "news"
+    "postmaster"
+    "sasl"
+    "src"
+    "staff"
+    "tape"
+    "tty"
+    "uucp"
+    "video"
+    "voice"
+)
+
+for user in ${removeUsers[@]}; do
+    deluser --remove-home $user &>/dev/null
+    delgroup $user &>/dev/null
+done

@@ -1,0 +1,50 @@
+# #
+#   Base › Ubuntu › Docker-compose.yml
+#   
+#   Base docker image for Ubuntu
+#   
+#   @url                  https://github.com/aetherinox/docker-base-ubuntu
+#   
+#   @image:github         ghcr.io/aetherinox/base-ubuntu:latest
+#                         ghcr.io/aetherinox/base-ubuntu:22.04
+#                         ghcr.io/aetherinox/base-ubuntu:noble
+#
+#   @image:dockerhub      aetherinox/base-ubuntu:latest
+#                         aetherinox/base-ubuntu:22.04
+#                         aetherinox/base-ubuntu:noble
+# #
+
+services:
+
+    # #
+    #   Service › Ubuntu
+    # #
+
+    ubuntu-noble:
+        container_name: ubuntu-noble
+        image: base-ubuntu:24.04
+        hostname: ubuntu
+        environment:
+            - TZ=Etc/UTC
+        volumes:
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+            - /var/run/docker.sock:/var/run/docker.sock
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        networks:
+            traefik:
+                ipv4_address: '172.18.75.1'
+
+# #
+#   Networks
+#   
+#   docker network create --driver=bridge --subnet=172.18.0.0/16 --gateway=172.18.0.1 traefik
+# #
+
+networks:
+    traefik:
+        name: traefik
+        external: true
