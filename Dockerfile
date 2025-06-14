@@ -5,6 +5,62 @@
 #   @usage          base image utilized for all docker images using Ubuntu with s6-overlay integration
 #   @file           Dockerfile
 #   @repo           https://github.com/aetherinox/docker-base-ubuntu
+#   @build          To build these images, use the following commands:
+#
+#                   AMD64
+#                       Build the image with:
+#                           docker buildx build \
+#                             --build-arg IMAGE_NAME=Ubuntu \
+#                             --build-arg IMAGE_DISTRO=noble \
+#                             --build-arg IMAGE_ARCH=amd64 \
+#                             --build-arg IMAGE_BUILDDATE=20260812 \
+#                             --build-arg IMAGE_VERSION=24.04 \
+#                             --build-arg IMAGE_RELEASE=stable \
+#                             --build-arg IMAGE_REGISTRY=github \
+#                             --tag ubuntu-base:latest \
+#                             --tag ubuntu-base:noble \
+#                             --tag ubuntu-base:24.04 \
+#                             --tag ubuntu-base:noble-amd64 \
+#                             --attest type=provenance,disabled=true \
+#                             --attest type=sbom,disabled=true \
+#                             --output type=docker \
+#                             --builder default \
+#                             --file Dockerfile \
+#                             --platform linux/aramd64m64 \
+#                             --allow network.host \
+#                             --network host \
+#                             --no-cache \
+#                             --progress=plain \
+#                             .
+#
+#                   Arm64
+#                       For arm64, make sure you install QEMU first in docker; use the command:
+#                           docker run --privileged --rm tonistiigi/binfmt --install all
+#
+#                       Build the image with:
+#                           docker buildx build \
+#                             --build-arg IMAGE_NAME=Ubuntu \
+#                             --build-arg IMAGE_DISTRO=noble \
+#                             --build-arg IMAGE_ARCH=arm64 \
+#                             --build-arg IMAGE_BUILDDATE=20260812 \
+#                             --build-arg IMAGE_VERSION=24.04 \
+#                             --build-arg IMAGE_RELEASE=stable \
+#                             --build-arg IMAGE_REGISTRY=github \
+#                             --tag ubuntu-base:latest \
+#                             --tag ubuntu-base:noble \
+#                             --tag ubuntu-base:24.04 \
+#                             --tag ubuntu-base:noble-arm64 \
+#                             --attest type=provenance,disabled=true \
+#                             --attest type=sbom,disabled=true \
+#                             --output type=docker \
+#                             --builder default \
+#                             --file Dockerfile \
+#                             --platform linux/arm64 \
+#                             --allow network.host \
+#                             --network host \
+#                             --no-cache \
+#                             --progress=plain \
+#                             .
 # #
 
 ARG ALPINE_VERSION=3.22
@@ -36,8 +92,8 @@ ARG IMAGE_VERSION="24.04"
 
 ARG UBUNTU_ARCH="${IMAGE_ARCH}"
 ENV UBUNTU_DISTRO="${IMAGE_DISTRO}"
-ENV UBUNTU_VERSION="24.04"
-ENV S6_OVERLAY_VERSION="${IMAGE_VERSION}"
+ENV UBUNTU_VERSION="${IMAGE_VERSION}"
+ENV S6_OVERLAY_VERSION="3.2.1.0"
 ENV S6_OVERLAY_ARCH="x86_64"
 ENV BASHIO_VERSION="0.16.2"
 
@@ -189,10 +245,10 @@ ENV UBUNTU_ARCH="${IMAGE_ARCH}"
 ENV UBUNTU_DISTRO="${IMAGE_DISTRO}"
 ENV UBUNTU_VERSION="${IMAGE_VERSION}"
 
-ENV S6_OVERLAY_ARCH="x86_64"
 ENV S6_OVERLAY_VERSION="3.2.1.0"
-
+ENV S6_OVERLAY_ARCH="x86_64"
 ENV BASHIO_VERSION="0.16.2"
+
 ENV MODS_VERSION="v3"
 ENV PKG_INST_VERSION="v1"
 ENV AETHERXOWN_VERSION="v1"
@@ -225,6 +281,8 @@ LABEL org.ubuntu.image.distro="${UBUNTU_DISTRO:-noble}"
 LABEL org.ubuntu.image.release="${IMAGE_RELEASE:-stable}"
 LABEL org.ubuntu.image.sha="${IMAGE_SHA1:-0000000000000000000000000000000000000000}"
 LABEL org.ubuntu.image.architecture="${UBUNTU_ARCH:-amd64}"
+LABEL org.s6overlay.image.version="${S6_OVERLAY_VERSION:-3.0.0.0}"
+LABEL org.s6overlay.image.architecture="${S6_OVERLAY_ARCH:-x86_64}"
 
 # #
 #   scratch › add cdn > core
