@@ -571,7 +571,7 @@ jobs:
               with:
                   registry: ghcr.io
                   username: ${{ env.IMAGE_GHCR_USERNAME }}
-                  password: ${{ secrets.IMAGE_GHCR_TOKEN }}
+                  password: ${{ secrets.SELF_TOKEN_CL }}
 
             # #
             #   Release › Github › Read Readme
