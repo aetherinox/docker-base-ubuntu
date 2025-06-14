@@ -22,20 +22,20 @@ FROM alpine:${ALPINE_VERSION} AS rootfs-stage
 
 ARG IMAGE_REPO_AUTHOR="aetherinox"
 ARG IMAGE_REPO_NAME="docker-base-ubuntu"
-ARG IMAGE_NAME="Alpine"
+ARG IMAGE_NAME="Ubuntu"
+ARG IMAGE_DISTRO="Noble"
 ARG IMAGE_ARCH="amd64"
 ARG IMAGE_SHA1="0000000000000000000000000000000000000000"
 ARG IMAGE_REGISTRY="local"
 ARG IMAGE_RELEASE="stable"
 ARG IMAGE_BUILDDATE="20250101"
 
-ARG UBUNTU_ARCH="amd64"
-ARG UBUNTU_DISTRO="noble"
-ARG UBUNTU_VERSION="24.04"
-
-ARG S6_OVERLAY_VERSION="3.2.1.0"
-ARG S6_OVERLAY_ARCH="x86_64"
-ARG BASHIO_VERSION="0.16.2"
+ENV UBUNTU_ARCH="amd64"
+ENV UBUNTU_DISTRO="${IMAGE_DISTRO}"
+ENV UBUNTU_VERSION="24.04"
+ENV S6_OVERLAY_VERSION="3.2.1.0"
+ENV S6_OVERLAY_ARCH="x86_64"
+ENV BASHIO_VERSION="0.16.2"
 
 # #
 #   detect ubuntu version from distro
@@ -76,7 +76,19 @@ RUN \
 # #
 
 RUN \
-    git clone --depth=1 https://git.launchpad.net/cloud-images/+oci/ubuntu-base -b oci-${UBUNTU_DISTRO}-${UBUNTU_VERSION} /build && \
+    if [ "${IMAGE_ARCH}" = "armv7" ]; then \
+        UBUNTU_ARCH="armv7"; \
+    elif [ "${IMAGE_ARCH}" = "i386" ]; then \
+        UBUNTU_ARCH="i386"; \
+    elif [ "${IMAGE_ARCH}" = "amd64" ]; then \
+        UBUNTU_ARCH="amd64"; \
+    elif [ "${IMAGE_ARCH}" = "arm64" ]; then \
+        UBUNTU_ARCH="arm64"; \
+    else \
+        UBUNTU_ARCH="${UBUNTU_ARCH}"; \
+    fi \
+    \
+    && git clone --depth=1 https://git.launchpad.net/cloud-images/+oci/ubuntu-base -b oci-${UBUNTU_DISTRO}-${UBUNTU_VERSION} /build && \
     cd /build/oci && \
     DIGEST=$(jq -r '.manifests[0].digest[7:]' < index.json) && \
     cd /build/oci/blobs/sha256 && \
@@ -115,13 +127,13 @@ RUN \
 # #
 
 RUN \
-    if [ "${UBUNTU_ARCH}" = "armv7" ]; then \
+    if [ "${IMAGE_ARCH}" = "armv7" ]; then \
         S6_OVERLAY_ARCH="arm"; \
-    elif [ "${UBUNTU_ARCH}" = "i386" ]; then \
+    elif [ "${IMAGE_ARCH}" = "i386" ]; then \
         S6_OVERLAY_ARCH="i686"; \
-    elif [ "${UBUNTU_ARCH}" = "amd64" ]; then \
+    elif [ "${IMAGE_ARCH}" = "amd64" ]; then \
         S6_OVERLAY_ARCH="x86_64"; \
-    elif [ "${UBUNTU_ARCH}" = "arm64" ]; then \
+    elif [ "${IMAGE_ARCH}" = "arm64" ]; then \
         S6_OVERLAY_ARCH="aarch64"; \
     else \
         S6_OVERLAY_ARCH="${UBUNTU_ARCH}"; \
@@ -160,27 +172,30 @@ COPY --from=rootfs-stage /root-out/ /
 
 ARG IMAGE_REPO_AUTHOR="aetherinox"
 ARG IMAGE_REPO_NAME="docker-base-ubuntu"
-ARG IMAGE_NAME="Alpine"
+ARG IMAGE_NAME="Ubuntu"
+ARG IMAGE_DISTRO="noble"
 ARG IMAGE_ARCH="amd64"
+ARG IMAGE_BUILDDATE="20250101"
+ARG IMAGE_VERSION="24.04"
+ARG IMAGE_RELEASE="stable"
 ARG IMAGE_SHA1="0000000000000000000000000000000000000000"
 ARG IMAGE_REGISTRY="local"
-ARG IMAGE_RELEASE="stable"
-ARG IMAGE_BUILDDATE="20250101"
-
-ARG UBUNTU_ARCH="amd64"
-ARG UBUNTU_DISTRO="noble"
-ARG UBUNTU_VERSION="24.04"
 
 ARG ALPINE_VERSION="3.22"
 ARG ALPINE_ARCH="x86_64"
-ARG S6_OVERLAY_ARCH="x86_64"
-ARG S6_OVERLAY_VERSION="3.2.1.0"
 
-ARG BASHIO_VERSION="0.16.2"
-ARG MODS_VERSION="v3"
-ARG PKG_INST_VERSION="v1"
-ARG AETHERXOWN_VERSION="v1"
-ARG WITHCONTENV_VERSION="v1"
+ENV UBUNTU_ARCH="amd64"
+ENV UBUNTU_DISTRO="${IMAGE_DISTRO}"
+ENV UBUNTU_VERSION="${IMAGE_VERSION}"
+
+ENV S6_OVERLAY_ARCH="x86_64"
+ENV S6_OVERLAY_VERSION="3.2.1.0"
+
+ENV BASHIO_VERSION="0.16.2"
+ENV MODS_VERSION="v3"
+ENV PKG_INST_VERSION="v1"
+ENV AETHERXOWN_VERSION="v1"
+ENV WITHCONTENV_VERSION="v1"
 
 # #
 #   scratch › set labels
@@ -195,7 +210,7 @@ LABEL org.opencontainers.image.source="https://github.com/${IMAGE_REPO_AUTHOR}/$
 LABEL org.opencontainers.image.documentation="https://github.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/wiki"
 LABEL org.opencontainers.image.issues="https://github.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/issues"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.version=
+LABEL org.opencontainers.image.version="${UBUNTU_VERSION}"
 LABEL org.opencontainers.image.distro="${UBUNTU_DISTRO:-noble}"
 LABEL org.opencontainers.image.branch="main"
 LABEL org.opencontainers.image.registry="${IMAGE_REGISTRY:-local}"
@@ -204,7 +219,7 @@ LABEL org.opencontainers.image.development="false"
 LABEL org.opencontainers.image.sha="${IMAGE_SHA1:-0000000000000000000000000000000000000000}"
 LABEL org.opencontainers.image.architecture="${UBUNTU_ARCH:-amd64}"
 LABEL org.ubuntu.image.maintainers="${IMAGE_REPO_AUTHOR}"
-LABEL org.ubuntu.image.version="Version:- ${VERSION} Date:- ${IMAGE_BUILDDATE:-01012026}"
+LABEL org.ubuntu.image.version="Version: ${UBUNTU_VERSION} Date: ${IMAGE_BUILDDATE:-01012026}"
 LABEL org.ubuntu.image.distro="${UBUNTU_DISTRO:-noble}"
 LABEL org.ubuntu.image.release="${IMAGE_RELEASE:-stable}"
 LABEL org.ubuntu.image.sha="${IMAGE_SHA1:-0000000000000000000000000000000000000000}"

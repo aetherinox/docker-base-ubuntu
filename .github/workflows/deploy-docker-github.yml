@@ -695,12 +695,13 @@ jobs:
                   tags: |
                       ${{ steps.task_release_gh_meta.outputs.tags }}
                   build-args: |-
-                      UBUNTU_ARCH=amd64
-                      UBUNTU_DISTRO=${{ env.IMAGE_DISTRO }}
-                      ALPINE_VERSION=3.22
-                      RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
-                      BUILDDATE=${{ env.NOW_DOCKER }}
-                      GIT_SHA1=${{ env.SHA1 }}
+                      IMAGE_NAME=Ubuntu
+                      IMAGE_DISTRO=${{ env.IMAGE_DISTRO }}
+                      IMAGE_ARCH=amd64
+                      IMAGE_BUILDDATE=${{ env.NOW_DOCKER }}
+                      IMAGE_RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
+                      IMAGE_REGISTRY=${{ env.IMAGE_REGISTRY }}
+                      IMAGE_SHA1=${{ env.SHA1 }}
                   annotations: |
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
@@ -776,12 +777,13 @@ jobs:
                   tags: |
                       ${{ steps.task_release_gh_meta.outputs.tags }}
                   build-args: |-
-                      UBUNTU_ARCH=arm64
-                      UBUNTU_DISTRO=${{ env.IMAGE_DISTRO }}
-                      ALPINE_VERSION=3.22
-                      RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
-                      BUILDDATE=${{ env.NOW_DOCKER }}
-                      GIT_SHA1=${{ env.SHA1 }}
+                      IMAGE_NAME=Ubuntu
+                      IMAGE_DISTRO=${{ env.IMAGE_DISTRO }}
+                      IMAGE_ARCH=arm64
+                      IMAGE_BUILDDATE=${{ env.NOW_DOCKER }}
+                      IMAGE_RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
+                      IMAGE_REGISTRY=${{ env.IMAGE_REGISTRY }}
+                      IMAGE_SHA1=${{ env.SHA1 }}
                   annotations: |-
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
