@@ -583,7 +583,7 @@ jobs:
               id: task_release_gh_readme_cache
               uses: actions/github-script@v7
               with:
-                github-token: ${{ secrets.IMAGE_GHCR_TOKEN }}
+                github-token: ${{ secrets.SELF_TOKEN_CL }}
                 script: |
                     'use strict'
 
@@ -1120,7 +1120,7 @@ jobs:
               uses: quartx-analytics/ghcr-cleaner@v1
               with:
                   owner-type: user
-                  token: ${{ secrets.IMAGE_GHCR_TOKEN }}
+                  token: ${{ secrets.SELF_TOKEN_CL }}
                   repository-owner: ${{ github.repository_owner }}
                   repository-name: ${{ github.repository }}
                   delete-untagged: true
