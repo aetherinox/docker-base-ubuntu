@@ -631,7 +631,7 @@ jobs:
                   labels: |
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
-                      org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }})
+                      org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
                       org.opencontainers.image.description=${{ env.IMAGE_NAME }} base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
@@ -654,7 +654,7 @@ jobs:
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
-                      org.opencontainers.image.description=Ubuntu base image with s6-overlay integration
+                      org.opencontainers.image.description=${{ env.IMAGE_NAME }} base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
                       org.opencontainers.image.documentation=https://github.com/${{ github.repository }}/wiki
@@ -695,7 +695,7 @@ jobs:
                   tags: |
                       ${{ steps.task_release_gh_meta.outputs.tags }}
                   build-args: |-
-                      IMAGE_NAME=Ubuntu
+                      IMAGE_NAME=${{ env.IMAGE_NAME }}
                       IMAGE_DISTRO=${{ env.IMAGE_DISTRO }}
                       IMAGE_ARCH=amd64
                       IMAGE_BUILDDATE=${{ env.NOW_DOCKER }}
@@ -706,7 +706,7 @@ jobs:
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
-                      org.opencontainers.image.description=Ubuntu base image with s6-overlay integration
+                      org.opencontainers.image.description=${{ env.IMAGE_NAME }} base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
                       org.opencontainers.image.documentation=https://github.com/${{ github.repository }}/wiki
@@ -777,9 +777,9 @@ jobs:
                   tags: |
                       ${{ steps.task_release_gh_meta.outputs.tags }}
                   build-args: |-
-                      IMAGE_NAME=Ubuntu
+                      IMAGE_NAME=${{ env.IMAGE_NAME }}
                       IMAGE_DISTRO=${{ env.IMAGE_DISTRO }}
-                      IMAGE_ARCH=arm64
+                      IMAGE_ARCH=amd64
                       IMAGE_BUILDDATE=${{ env.NOW_DOCKER }}
                       IMAGE_RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
                       IMAGE_REGISTRY=${{ env.IMAGE_REGISTRY }}
@@ -788,7 +788,7 @@ jobs:
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
-                      org.opencontainers.image.description=Ubuntu base image with s6-overlay integration
+                      org.opencontainers.image.description=${{ env.IMAGE_NAME }} base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
                       org.opencontainers.image.documentation=https://github.com/${{ github.repository }}/wiki
