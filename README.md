@@ -11,7 +11,7 @@ This branch `main` does not contain any files other than the `README.md`. You ne
 <br />
 <br />
 
-<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTztjdkYv1-Hh12bQ2syF3GGplPqirhI0dxvg&s" width="500">
+<img src="https://orelfichman.com/wp-content/uploads/2020/02/Ubuntu-Banner-1024x341-1.png" width="600px">
 
 <br />
 <br />
