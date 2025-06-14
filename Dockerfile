@@ -153,13 +153,15 @@ COPY --from=rootfs-stage /root-out/ /
 # #
 
 ARG REPO_AUTHOR="aetherinox"
-ARG REPO_NAME="docker-base-ubuntu"
+ARG REPO_NAME="docker-base-alpine"
+ARG UBUNTU_ARCH="amd64"
+ARG UBUNTU_DISTRO="noble"
+ARG UBUNTU_VERSION="24.04"
 ARG RELEASE
 ARG VERSION
 ARG BUILDDATE
 ARG REGISTRY=local
 ARG GIT_SHA1=0000000000000000000000000000000000000000
-ARG UBUNTU_ARCH=amd64
 ARG MODS_VERSION="v3"
 ARG PKG_INST_VERSION="v1"
 ARG AETHERXOWN_VERSION="v1"
@@ -173,24 +175,23 @@ LABEL org.opencontainers.image.authors="${REPO_AUTHOR}"
 LABEL org.opencontainers.image.vendor="${REPO_AUTHOR}"
 LABEL org.opencontainers.image.title="Ubuntu (Base) ${UBUNTU_VERSION} (${UBUNTU_DISTRO})"
 LABEL org.opencontainers.image.description="Ubuntu base image with s6-overlay integration"
-LABEL org.opencontainers.image.created=""
 LABEL org.opencontainers.image.source="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
+LABEL org.opencontainers.image.repo.1="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
+LABEL org.opencontainers.image.repo.2="https://github.com/thebinaryninja/${REPO_NAME}"
 LABEL org.opencontainers.image.documentation="https://github.com/${REPO_AUTHOR}/${REPO_NAME}/wiki"
 LABEL org.opencontainers.image.url="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.distro="${UBUNTU_DISTRO:-noble}"
-LABEL org.opencontainers.image.branch="main"
+LABEL org.opencontainers.image.architecture="${UBUNTU_ARCH:-amd64}"
+LABEL org.opencontainers.image.ref.name="main"
 LABEL org.opencontainers.image.registry="${REGISTRY:-local}"
 LABEL org.opencontainers.image.release="${RELEASE:-stable}"
-LABEL org.opencontainers.image.development="false"
-LABEL org.opencontainers.image.revision="${GIT_SHA1:-0000000000000000000000000000000000000000}"
-LABEL org.opencontainers.image.architecture="${UBUNTU_ARCH:-amd64}"
 LABEL org.ubuntu.image.maintainers="${REPO_AUTHOR}"
-LABEL org.ubuntu.image.version="Version:- ${VERSION} Date:- ${BUILDDATE:-01012026}"
+LABEL org.ubuntu.image.build-version="Version:- ${VERSION} Date:- ${BUILDDATE:-01012026}"
 LABEL org.ubuntu.image.distro="${UBUNTU_DISTRO:-noble}"
-LABEL org.ubuntu.image.release="${RELEASE:-stable}"
-LABEL org.ubuntu.image.revision="${GIT_SHA1:-0000000000000000000000000000000000000000}"
-LABEL org.ubuntu.image.architecture="${UBUNTU_ARCH:-amd64}"
+LABEL org.ubuntu.image.build-architecture="${UBUNTU_ARCH:-amd64}"
+LABEL org.ubuntu.image.build-release="${RELEASE:-stable}"
+LABEL org.ubuntu.image.build-sha1="${GIT_SHA1:-0000000000000000000000000000000000000000}"
 
 # #
 #   scratch › add cdn > core
@@ -228,10 +229,24 @@ ENV GUID0=0
 ENV GUID1=999
 
 # #
-#   scratch › copy sources
+#   scratch › copy sources to file
 # #
 
-COPY sources.list /etc/apt/
+COPY sources.list /tmp
+COPY sources.list.arm /tmp
+
+# #
+#   scratch › copy sources to relative location
+# #
+
+RUN \
+    if [ "${UBUNTU_ARCH}" = "amd64" ]; then \
+        mv /tmp/sources.list /etc/apt ; \
+    elif [ "${UBUNTU_ARCH}" = "arm64" ]; then \
+        mv /tmp/sources.list.arm /etc/apt/sources.list ; \
+    else \
+        mv /tmp/sources.list /etc/apt ; \
+    fi
 
 # #
 #   install packages
