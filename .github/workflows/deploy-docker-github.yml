@@ -699,6 +699,7 @@ jobs:
                   build-args: |-
                       UBUNTU_ARCH=amd64
                       UBUNTU_DISTRO=${{ env.IMAGE_DISTRO }}
+                      ALPINE_VERSION=3.22
                       RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
                       BUILDDATE=${{ env.NOW_DOCKER }}
                       GIT_SHA1=${{ env.SHA1 }}
@@ -779,6 +780,7 @@ jobs:
                   build-args: |-
                       UBUNTU_ARCH=arm64
                       UBUNTU_DISTRO=${{ env.IMAGE_DISTRO }}
+                      ALPINE_VERSION=3.22
                       RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
                       BUILDDATE=${{ env.NOW_DOCKER }}
                       GIT_SHA1=${{ env.SHA1 }}
