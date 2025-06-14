@@ -22,7 +22,7 @@ services:
 
     base-ubuntu-noble:
         container_name: base-ubuntu-noble
-        image: noble:latest
+        image: ubuntu:noble
         hostname: noble
         environment:
             - TZ=Etc/UTC
