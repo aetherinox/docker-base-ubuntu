@@ -34,7 +34,7 @@
 #                       Add system env var with path to act.exe
 #                       Run the commands:
 #                           git pull https://github.com/username/repo
-#                           act -W .github/workflows/deploy-docker-github.yml -P ubuntu-latest=catthehacker/ubuntu:full-22.04
+#                           act -W .github/workflows/deploy-docker-github.yml -P ubuntu-latest=catthehacker/ubuntu:full-24.04
 #                           act -W .github/workflows/deploy-docker-github.yml -s TOKEN_CL=XXXXXXXXXX --pull=false
 # #
 
@@ -62,7 +62,7 @@ on:
             #   name of release; ubuntu, alpine, etc
             # #
 
-            IMAGE_RELEASE:
+            IMAGE_NAME:
                 description:    '📦 Release Name'
                 required:       true
                 default:        'ubuntu'
@@ -90,7 +90,7 @@ on:
             IMAGE_VERSION:
                 description:    '🏷️ Image Version'
                 required:       true
-                default:        '22.04'
+                default:        '24.04'
                 type:           string
 
             # #
@@ -174,9 +174,9 @@ on:
 # #
 
 env:
-    IMAGE_RELEASE:              ${{ github.event.inputs.IMAGE_RELEASE || 'ubuntu' }}
+    IMAGE_NAME:                 ${{ github.event.inputs.IMAGE_NAME || 'ubuntu' }}
     IMAGE_DISTRO:               ${{ github.event.inputs.IMAGE_DISTRO || 'noble' }}
-    IMAGE_VERSION:              ${{ github.event.inputs.IMAGE_VERSION || '22.04' }}
+    IMAGE_VERSION:              ${{ github.event.inputs.IMAGE_VERSION || '24.04' }}
     IMAGE_GHCR_AUTHOR:          ${{ github.event.inputs.IMAGE_GHCR_AUTHOR || 'Aetherinox' }}
     IMAGE_GHCR_USERNAME:        ${{ github.event.inputs.IMAGE_GHCR_USERNAME || 'Aetherinox' }}
     IMAGE_REGISTRY:             ${{ github.event.inputs.IMAGE_REGISTRY || 'Github' }}
@@ -435,10 +435,10 @@ jobs:
                   SHA1_GH="$(echo ${GITHUB_SHA})"                                                   #  71fad013cfce9116ec62779e4a7e627fe4c33627
                   echo "SHA1_GH=${SHA1_GH}" >> $GITHUB_ENV
 
-                  PKG_VER_1DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -d '.' -f1-1)"              #  22.04 > 22
+                  PKG_VER_1DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -d '.' -f1-1)"              #  24.04 > 22
                   echo "PKG_VER_1DIGIT=${PKG_VER_1DIGIT}" >> $GITHUB_ENV
 
-                  PKG_VER_2DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -f2 -d ":" | cut -c1-4)"    #  22.04 > 22.0
+                  PKG_VER_2DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -f2 -d ":" | cut -c1-4)"    #  24.04 > 22.0
                   echo "PKG_VER_2DIGIT=${PKG_VER_2DIGIT}" >> $GITHUB_ENV
 
                   echo "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
@@ -618,7 +618,7 @@ jobs:
                       #  tag            add pr tag            ( PR or push only )
                       type=ref,enable=${{ github.event_name == 'pull_request' || github.event_name == 'push' }},priority=600,prefix=,suffix=,event=tag
 
-                      #  tag            add 22.04             ( dispatch only + no dev )
+                      #  tag            add 24.04             ( dispatch only + no dev )
                       type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_VERSION }}
 
                       #  tag            add development       ( dispatch only + only dev )
@@ -631,49 +631,47 @@ jobs:
                   labels: |
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
-                      org.opencontainers.image.title=${{ env.IMAGE_RELEASE }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
-                      org.opencontainers.image.description=Ubuntu base image with s6-overlay integration
+                      org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }})
+                      org.opencontainers.image.description=${{ env.IMAGE_NAME }} base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
                       org.opencontainers.image.documentation=https://github.com/${{ github.repository }}/wiki
-                      org.opencontainers.image.url=https://github.com/${{ github.repository }}
+                      org.opencontainers.image.issues=https://github.com/${{ github.repository }}/issues
                       org.opencontainers.image.licenses=MIT
-                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '22.04' }}
+                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '24.04' }}
                       org.opencontainers.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
                       org.opencontainers.image.branch=${{ github.ref_name }}
                       org.opencontainers.image.registry=${{ env.IMAGE_REGISTRY }}
                       org.opencontainers.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
                       org.opencontainers.image.development=${{ inputs.DEV_RELEASE == true && 'true' || 'false' }}
-                      org.opencontainers.image.revision=${{ github.sha }}
+                      org.opencontainers.image.sha=${{ github.sha }}
                       org.ubuntu.image.maintainers=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.ubuntu.image.version=Version:- ${{ env.IMAGE_VERSION }} Date:- ${{ env.NOW_DOCKER }}
                       org.ubuntu.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
-                      org.ubuntu.image.architecture=
                       org.ubuntu.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
-                      org.ubuntu.image.revision=${{ github.sha }}
+                      org.ubuntu.image.sha=${{ github.sha }}
                   annotations: |
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
-                      org.opencontainers.image.title=${{ env.IMAGE_RELEASE }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
+                      org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
                       org.opencontainers.image.description=Ubuntu base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
                       org.opencontainers.image.documentation=https://github.com/${{ github.repository }}/wiki
-                      org.opencontainers.image.url=https://github.com/${{ github.repository }}
+                      org.opencontainers.image.issues=https://github.com/${{ github.repository }}/issues
                       org.opencontainers.image.licenses=MIT
-                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '22.04' }}
+                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '24.04' }}
                       org.opencontainers.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
                       org.opencontainers.image.branch=${{ github.ref_name }}
                       org.opencontainers.image.registry=${{ env.IMAGE_REGISTRY }}
                       org.opencontainers.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
                       org.opencontainers.image.development=${{ inputs.DEV_RELEASE == true && 'true' || 'false' }}
-                      org.opencontainers.image.revision=${{ github.sha }}
+                      org.opencontainers.image.sha=${{ github.sha }}
                       org.ubuntu.image.maintainers=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.ubuntu.image.version=Version:- ${{ env.IMAGE_VERSION }} Date:- ${{ env.NOW_DOCKER }}
                       org.ubuntu.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
-                      org.ubuntu.image.architecture=
                       org.ubuntu.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
-                      org.ubuntu.image.revision=${{ github.sha }}
+                      org.ubuntu.image.sha=${{ github.sha }}
 
             # #
             #   Release › Github › Build and Push › Amd64
@@ -706,26 +704,26 @@ jobs:
                   annotations: |
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
-                      org.opencontainers.image.title=${{ env.IMAGE_RELEASE }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
+                      org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
                       org.opencontainers.image.description=Ubuntu base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
                       org.opencontainers.image.documentation=https://github.com/${{ github.repository }}/wiki
-                      org.opencontainers.image.url=https://github.com/${{ github.repository }}
+                      org.opencontainers.image.issues=https://github.com/${{ github.repository }}/issues
                       org.opencontainers.image.licenses=MIT
-                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '22.04' }}
+                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '24.04' }}
                       org.opencontainers.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
                       org.opencontainers.image.branch=${{ github.ref_name }}
                       org.opencontainers.image.registry=${{ env.IMAGE_REGISTRY }}
                       org.opencontainers.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
                       org.opencontainers.image.development=${{ inputs.DEV_RELEASE == true && 'true' || 'false' }}
-                      org.opencontainers.image.revision=${{ github.sha }}
+                      org.opencontainers.image.sha=${{ github.sha }}
                       org.opencontainers.image.architecture=amd64
                       org.ubuntu.image.maintainers=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.ubuntu.image.version=Version:- ${{ env.IMAGE_VERSION }} Date:- ${{ env.NOW_DOCKER }}
                       org.ubuntu.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
                       org.ubuntu.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
-                      org.ubuntu.image.revision=${{ github.sha }}
+                      org.ubuntu.image.sha=${{ github.sha }}
                       org.ubuntu.image.architecture=amd64
 
             # #
@@ -787,26 +785,26 @@ jobs:
                   annotations: |-
                       org.opencontainers.image.authors=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.opencontainers.image.vendor=${{ env.REGISTRY_REPO_AUTHOR_LC }}
-                      org.opencontainers.image.title=${{ env.IMAGE_RELEASE }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
+                      org.opencontainers.image.title=${{ env.IMAGE_NAME }} (Base) ${{ env.IMAGE_VERSION }} (${{ env.IMAGE_DISTRO }})
                       org.opencontainers.image.description=Ubuntu base image with s6-overlay integration
                       org.opencontainers.image.created=${{ env.NOW_DOCKER_TS }}
                       org.opencontainers.image.source=https://github.com/${{ github.repository }}
                       org.opencontainers.image.documentation=https://github.com/${{ github.repository }}/wiki
-                      org.opencontainers.image.url=https://github.com/${{ github.repository }}
+                      org.opencontainers.image.issues=https://github.com/${{ github.repository }}/issues
                       org.opencontainers.image.licenses=MIT
-                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '22.04' }}
+                      org.opencontainers.image.version=${{ env.IMAGE_VERSION || '24.04' }}
                       org.opencontainers.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
                       org.opencontainers.image.branch=${{ github.ref_name }}
                       org.opencontainers.image.registry=${{ env.IMAGE_REGISTRY }}
                       org.opencontainers.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
                       org.opencontainers.image.development=${{ inputs.DEV_RELEASE == true && 'true' || 'false' }}
-                      org.opencontainers.image.revision=${{ github.sha }}
+                      org.opencontainers.image.sha=${{ github.sha }}
                       org.opencontainers.image.architecture=arm64
                       org.ubuntu.image.maintainers=${{ env.REGISTRY_REPO_AUTHOR_LC }}
                       org.ubuntu.image.version=Version:- ${{ env.IMAGE_VERSION }} Date:- ${{ env.NOW_DOCKER }}
                       org.ubuntu.image.distro=${{ env.IMAGE_DISTRO || 'noble' }}
                       org.ubuntu.image.release="${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}"
-                      org.ubuntu.image.revision=${{ github.sha }}
+                      org.ubuntu.image.sha=${{ github.sha }}
                       org.ubuntu.image.architecture=arm64
 
             # #
@@ -863,7 +861,7 @@ jobs:
                   echo "inputs.DRY_RUN ........................... ${{ inputs.DRY_RUN }}"
                   echo -e ""
                   echo "---- [ ENV ] -------------------------------------------------------------------------------------------"
-                  echo "env.IMAGE_RELEASE ........................ ${{ env.IMAGE_RELEASE }}"
+                  echo "env.IMAGE_NAME ........................ ${{ env.IMAGE_NAME }}"
                   echo "env.IMAGE_DISTRO ......................... ${{ env.IMAGE_DISTRO }}"
                   echo "env.IMAGE_VERSION ........................ ${{ env.IMAGE_VERSION }}"
                   echo "env.PKG_VER_1DIGIT ....................... ${{ env.PKG_VER_1DIGIT }}"

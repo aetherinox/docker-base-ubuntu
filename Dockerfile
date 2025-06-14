@@ -3,9 +3,8 @@
 # #
 #   @project        Docker Image - Ubuntu Base
 #   @usage          base image utilized for all docker images using Ubuntu with s6-overlay integration
-#   @arch           amd64
 #   @file           Dockerfile
-#   @repo           https://github.com/aetherinox/docker-ubuntu-base
+#   @repo           https://github.com/aetherinox/docker-base-ubuntu
 # #
 
 ARG ALPINE_VERSION=3.22
@@ -21,15 +20,22 @@ FROM alpine:${ALPINE_VERSION} AS rootfs-stage
 #                       aarch64
 # #
 
-ARG REPO_AUTHOR="aetherinox"
-ARG REPO_NAME="docker-base-alpine"
+ARG IMAGE_REPO_AUTHOR="aetherinox"
+ARG IMAGE_REPO_NAME="docker-base-ubuntu"
+ARG IMAGE_NAME="Alpine"
+ARG IMAGE_ARCH="amd64"
+ARG IMAGE_SHA1="0000000000000000000000000000000000000000"
+ARG IMAGE_REGISTRY="local"
+ARG IMAGE_RELEASE="stable"
+ARG IMAGE_BUILDDATE="20250101"
+
 ARG UBUNTU_ARCH="amd64"
 ARG UBUNTU_DISTRO="noble"
 ARG UBUNTU_VERSION="24.04"
+
 ARG S6_OVERLAY_VERSION="3.2.1.0"
 ARG S6_OVERLAY_ARCH="x86_64"
 ARG BASHIO_VERSION="0.16.2"
-ARG REGISTRY="local"
 
 # #
 #   detect ubuntu version from distro
@@ -91,7 +97,7 @@ RUN \
         /build
 
 # #
-#   alpine › S6 > add overlay & optional symlinks
+#   Ubuntu › S6 > add overlay & optional symlinks
 #
 #   TAR         --xz, -J                      Use xz for compressing or decompressing the archives. See section Creating and Reading
 #                                                 Compressed Archives.
@@ -152,16 +158,25 @@ COPY --from=rootfs-stage /root-out/ /
 #   scratch › args
 # #
 
-ARG REPO_AUTHOR="aetherinox"
-ARG REPO_NAME="docker-base-alpine"
+ARG IMAGE_REPO_AUTHOR="aetherinox"
+ARG IMAGE_REPO_NAME="docker-base-ubuntu"
+ARG IMAGE_NAME="Alpine"
+ARG IMAGE_ARCH="amd64"
+ARG IMAGE_SHA1="0000000000000000000000000000000000000000"
+ARG IMAGE_REGISTRY="local"
+ARG IMAGE_RELEASE="stable"
+ARG IMAGE_BUILDDATE="20250101"
+
 ARG UBUNTU_ARCH="amd64"
 ARG UBUNTU_DISTRO="noble"
 ARG UBUNTU_VERSION="24.04"
-ARG RELEASE
-ARG VERSION
-ARG BUILDDATE
-ARG REGISTRY=local
-ARG GIT_SHA1=0000000000000000000000000000000000000000
+
+ARG ALPINE_VERSION="3.22"
+ARG ALPINE_ARCH="x86_64"
+ARG S6_OVERLAY_ARCH="x86_64"
+ARG S6_OVERLAY_VERSION="3.2.1.0"
+
+ARG BASHIO_VERSION="0.16.2"
 ARG MODS_VERSION="v3"
 ARG PKG_INST_VERSION="v1"
 ARG AETHERXOWN_VERSION="v1"
@@ -171,36 +186,38 @@ ARG WITHCONTENV_VERSION="v1"
 #   scratch › set labels
 # #
 
-LABEL org.opencontainers.image.authors="${REPO_AUTHOR}"
-LABEL org.opencontainers.image.vendor="${REPO_AUTHOR}"
-LABEL org.opencontainers.image.title="Ubuntu (Base) ${UBUNTU_VERSION} (${UBUNTU_DISTRO})"
-LABEL org.opencontainers.image.description="Ubuntu base image with s6-overlay integration"
-LABEL org.opencontainers.image.source="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
-LABEL org.opencontainers.image.repo.1="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
-LABEL org.opencontainers.image.repo.2="https://github.com/thebinaryninja/${REPO_NAME}"
-LABEL org.opencontainers.image.documentation="https://github.com/${REPO_AUTHOR}/${REPO_NAME}/wiki"
-LABEL org.opencontainers.image.url="https://github.com/${REPO_AUTHOR}/${REPO_NAME}"
+LABEL org.opencontainers.image.authors="${IMAGE_REPO_AUTHOR}"
+LABEL org.opencontainers.image.vendor="${IMAGE_REPO_AUTHOR}"
+LABEL org.opencontainers.image.title="${IMAGE_NAME:-Ubuntu} (Base) ${UBUNTU_VERSION} (${UBUNTU_DISTRO})"
+LABEL org.opencontainers.image.description="${IMAGE_NAME:-Ubuntu} base image with s6-overlay integration"
+LABEL org.opencontainers.image.created=
+LABEL org.opencontainers.image.source="https://github.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}"
+LABEL org.opencontainers.image.documentation="https://github.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/wiki"
+LABEL org.opencontainers.image.issues="https://github.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/issues"
 LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.version=
 LABEL org.opencontainers.image.distro="${UBUNTU_DISTRO:-noble}"
+LABEL org.opencontainers.image.branch="main"
+LABEL org.opencontainers.image.registry="${IMAGE_REGISTRY:-local}"
+LABEL org.opencontainers.image.release="${IMAGE_RELEASE:-stable}"
+LABEL org.opencontainers.image.development="false"
+LABEL org.opencontainers.image.sha="${IMAGE_SHA1:-0000000000000000000000000000000000000000}"
 LABEL org.opencontainers.image.architecture="${UBUNTU_ARCH:-amd64}"
-LABEL org.opencontainers.image.ref.name="main"
-LABEL org.opencontainers.image.registry="${REGISTRY:-local}"
-LABEL org.opencontainers.image.release="${RELEASE:-stable}"
-LABEL org.ubuntu.image.maintainers="${REPO_AUTHOR}"
-LABEL org.ubuntu.image.build-version="Version:- ${VERSION} Date:- ${BUILDDATE:-01012026}"
+LABEL org.ubuntu.image.maintainers="${IMAGE_REPO_AUTHOR}"
+LABEL org.ubuntu.image.version="Version:- ${VERSION} Date:- ${IMAGE_BUILDDATE:-01012026}"
 LABEL org.ubuntu.image.distro="${UBUNTU_DISTRO:-noble}"
-LABEL org.ubuntu.image.build-architecture="${UBUNTU_ARCH:-amd64}"
-LABEL org.ubuntu.image.build-release="${RELEASE:-stable}"
-LABEL org.ubuntu.image.build-sha1="${GIT_SHA1:-0000000000000000000000000000000000000000}"
+LABEL org.ubuntu.image.release="${IMAGE_RELEASE:-stable}"
+LABEL org.ubuntu.image.sha="${IMAGE_SHA1:-0000000000000000000000000000000000000000}"
+LABEL org.ubuntu.image.architecture="${UBUNTU_ARCH:-amd64}"
 
 # #
 #   scratch › add cdn > core
 # #
 
-ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/docker-images.${MODS_VERSION}" "/docker-images"
-ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/package-install.${PKG_INST_VERSION}" "/etc/s6-overlay/s6-rc.d/init-mods-package-install/run"
-ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/aetherxown.${AETHERXOWN_VERSION}" "/usr/bin/aetherxown"
-ADD --chmod=755 "https://raw.githubusercontent.com/${REPO_AUTHOR}/${REPO_NAME}/docker/core/with-contenv.${WITHCONTENV_VERSION}" "/usr/bin/with-contenv"
+ADD --chmod=755 "https://raw.githubusercontent.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/docker/core/docker-images.${MODS_VERSION}" "/docker-images"
+ADD --chmod=755 "https://raw.githubusercontent.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/docker/core/package-install.${PKG_INST_VERSION}" "/etc/s6-overlay/s6-rc.d/init-mods-package-install/run"
+ADD --chmod=755 "https://raw.githubusercontent.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/docker/core/aetherxown.${AETHERXOWN_VERSION}" "/usr/bin/aetherxown"
+ADD --chmod=755 "https://raw.githubusercontent.com/${IMAGE_REPO_AUTHOR}/${IMAGE_REPO_NAME}/docker/core/with-contenv.${WITHCONTENV_VERSION}" "/usr/bin/with-contenv"
 
 # #
 #   scratch › env vars
