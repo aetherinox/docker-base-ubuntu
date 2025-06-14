@@ -57,7 +57,7 @@ on:
         inputs:
 
             # #
-            #   Release Name
+            #   Github › Release Name
             #
             #   name of release; ubuntu, alpine, etc
             # #
@@ -69,7 +69,7 @@ on:
                 type:           string
 
             # #
-            #   Distro Name
+            #   Github › Distro Name
             #
             #   used in github image path
             #       ghcr.io/${{ env.IMAGE_GHCR_AUTHOR }}/${{ env.IMAGE_DISTRO }}
@@ -82,7 +82,7 @@ on:
                 type:           string
 
             # #
-            #   Image Version
+            #   Github › Image Version
             #
             #   used to create new release tag, and add version to docker image name
             # #
@@ -94,7 +94,7 @@ on:
                 type:           string
 
             # #
-            #   Image Registry
+            #   Github › Image Registry
             #
             #   Options:
             #       - github
@@ -115,7 +115,7 @@ on:
                     - Local
 
             # #
-            #   Image Author
+            #   Github › Image Author
             #
             #   used in github image path
             #       ghcr.io/${{ env.IMAGE_GHCR_AUTHOR }}/${{ env.IMAGE_DISTRO }}
@@ -128,7 +128,7 @@ on:
                 type:           string
 
             # #
-            #   Image ghcr username
+            #   Github › Image ghcr username
             #
             #   this is the user to sign into ghcr as.
             # #
@@ -409,7 +409,6 @@ jobs:
             #   Release › Github › Start
             # #
 
-
             - name: >-
                   ✅ Start
               run: |
@@ -507,14 +506,13 @@ jobs:
                   echo "‎"
 
             # #
-            #   Release › Github › Get Timestamp
+            #   Release › Github › Set Vars
             # #
 
-            - name: '🕛 Get Timestamp'
-              id: task_release_set_timestamp
+            - name: '🕛 Set Vars'
               run: |
                   echo "REGISTRY_REPO_ORG_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }}/${{ env.IMAGE_DISTRO }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}        #  aetherinox/docker-base-ubuntu
-                  echo "REGISTRY_REPO_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}                                  #  aetherinox
+                  echo "REGISTRY_REPO_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}                                    #  aetherinox
 
             # #
             #   Release › Github › Install Dependencies
@@ -590,20 +588,20 @@ jobs:
               id: task_release_gh_readme_cache
               uses: actions/github-script@v7
               with:
-                github-token: ${{ secrets.SELF_TOKEN_CL }}
-                script: |
-                    'use strict'
+                  github-token: ${{ secrets.SELF_TOKEN_CL }}
+                  script: |
+                      'use strict'
 
-                    const { promises: fs } = require('fs')
+                      const { promises: fs } = require('fs')
 
-                    const main = async () => {
-                      const path = "README.md"
-                      let content = await fs.readFile(path, 'utf8')
+                      const main = async () => {
+                        const path = "README.md"
+                        let content = await fs.readFile(path, 'utf8')
 
-                      core.setOutput('content', content)
-                    }
+                        core.setOutput('content', content)
+                      }
 
-                    main().catch(err => core.setFailed(err.message))
+                      main().catch(err => core.setFailed(err.message))
 
             # #
             #   Release › Github › Meta
@@ -789,7 +787,7 @@ jobs:
                   build-args: |-
                       IMAGE_NAME=${{ env.IMAGE_NAME }}
                       IMAGE_DISTRO=${{ env.IMAGE_DISTRO }}
-                      IMAGE_ARCH=amd64
+                      IMAGE_ARCH=arm64
                       IMAGE_BUILDDATE=${{ env.NOW_DOCKER }}
                       IMAGE_RELEASE=${{ inputs.DEV_RELEASE == true && 'development' || 'stable' }}
                       IMAGE_REGISTRY=${{ env.IMAGE_REGISTRY }}
@@ -853,7 +851,8 @@ jobs:
 
             - name: '⚠️ Checkpoint'
               run: |
-                  echo ""
+                  echo "‎"
+                  echo "‎"
                   echo "---- [ GITHUB ] ----------------------------------------------------------------------------------------"
                   echo "github.actor.............................. ${{ github.actor }}"
                   echo "github.ref ............................... ${{ github.ref }}"
@@ -862,7 +861,8 @@ jobs:
                   echo "github.repository_owner .................. ${{ github.repository_owner }}"
                   echo "github.repository ........................ ${{ github.repository }}"
                   echo "github.sha ............................... ${{ github.sha }}"
-                  echo -e ""
+                  echo "‎"
+                  echo "‎"
                   echo "---- [ INPUTS ] ----------------------------------------------------------------------------------------"
                   echo "inputs.IMAGE_DISTRO ...................... ${{ inputs.IMAGE_NAME }}"
                   echo "inputs.IMAGE_DISTRO ...................... ${{ inputs.IMAGE_DISTRO }}"
@@ -871,9 +871,10 @@ jobs:
                   echo "inputs.IMAGE_GHCR_USERNAME ............... ${{ inputs.IMAGE_GHCR_USERNAME }}"
                   echo "inputs.DEV_RELEASE ....................... ${{ inputs.DEV_RELEASE }}"
                   echo "inputs.DRY_RUN ........................... ${{ inputs.DRY_RUN }}"
-                  echo -e ""
+                  echo "‎"
+                  echo "‎"
                   echo "---- [ ENV ] -------------------------------------------------------------------------------------------"
-                  echo "env.IMAGE_NAME ........................ ${{ env.IMAGE_NAME }}"
+                  echo "env.IMAGE_NAME ........................... ${{ env.IMAGE_NAME }}"
                   echo "env.IMAGE_DISTRO ......................... ${{ env.IMAGE_DISTRO }}"
                   echo "env.IMAGE_VERSION ........................ ${{ env.IMAGE_VERSION }}"
                   echo "env.PKG_VER_1DIGIT ....................... ${{ env.PKG_VER_1DIGIT }}"
@@ -888,21 +889,26 @@ jobs:
                   echo "env.REGISTRY_REPO_ORG_AUTHOR_LC .......... ${{ env.REGISTRY_REPO_ORG_AUTHOR_LC }}"
                   echo "env.REGISTRY_REPO_AUTHOR_LC .............. ${{ env.REGISTRY_REPO_AUTHOR_LC }}"
                   echo "env.SHA1 ................................. ${{ env.SHA1 }}"
-                  echo -e ""
+                  echo "‎"
+                  echo "‎"
                   echo "---- [ DOCKER IMAGES ] ---------------------------------------------------------------------------------"
                   echo "registry ................................. ${{ env.IMAGE_REGISTRY }} GHCR"
                   echo "tags ..................................... ${{ steps.task_release_gh_meta.outputs.tags }}"
                   echo "labels ................................... ${{ steps.task_release_gh_meta.outputs.labels }}"
                   echo "digest ................................... ${{ steps.task_release_gh_push_amd64.outputs.digest }}"
-                  echo -e ""
+                  echo "‎"
+                  echo "‎"
                   echo "(release) tags ........................... ${{ steps.task_release_gh_meta.outputs.tags }}"
                   echo "(release) labels ......................... ${{ steps.task_release_gh_meta.outputs.labels }}"
-                  echo -e ""
+                  echo "‎"
+                  echo "‎"
                   echo "---- [ DOCKER DIGESTS ] --------------------------------------------------------------------------------"
                   echo "docker image id (amd64) .................. ${{ steps.task_release_gh_push_amd64.outputs.imageid }}"
                   echo "docker digest (amd64) .................... ${{ steps.task_release_gh_push_amd64.outputs.digest }}"
                   echo "docker image id (arm64) .................. ${{ steps.task_release_gh_push_arm64.outputs.imageid }}"
                   echo "docker digest (arm64) .................... ${{ steps.task_release_gh_push_arm64.outputs.digest }}"
+                  echo "‎"
+                  echo "‎"
 
             # #
             #   Release › Github › Push Manifest
@@ -1025,7 +1031,6 @@ jobs:
             # #
             #   Cleanup › Tags › Start
             # #
-
 
             - name: >-
                   ✅ Start
