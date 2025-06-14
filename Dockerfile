@@ -69,14 +69,19 @@ FROM alpine:${ALPINE_VERSION} AS rootfs-stage
 # #
 #   arguments
 #
+#   ARGs are the only thing you should provide in your buildx command
+#   or Github workflow. ENVs are set by args, or hard-coded values
+#
+#   IMAGE_ARCH          amd64
+#                       arm64
+#
+#   The args below will get their value depending on what you set for IMAGE_ARCH:
+#
 #   UBUNTU_ARCH         amd64
 #                       arm64
 #
 #   S6_OVERLAY_ARCH     x86_64
 #                       aarch64
-#
-#   ARGs are the only thing you should provide in your buildx command
-#   or Github workflow. ENVs are set by args, or hard-coded values
 # #
 
 ARG IMAGE_REPO_AUTHOR="aetherinox"
@@ -90,7 +95,7 @@ ARG IMAGE_RELEASE="stable"
 ARG IMAGE_BUILDDATE="20250101"
 ARG IMAGE_VERSION="24.04"
 
-ARG UBUNTU_ARCH="${IMAGE_ARCH}"
+ENV UBUNTU_ARCH="${IMAGE_ARCH}"
 ENV UBUNTU_DISTRO="${IMAGE_DISTRO}"
 ENV UBUNTU_VERSION="${IMAGE_VERSION}"
 ENV S6_OVERLAY_VERSION="3.2.1.0"
