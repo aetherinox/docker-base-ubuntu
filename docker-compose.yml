@@ -1,29 +1,29 @@
 # #
-#   Base › Ubuntu › Docker-compose.yml
+#   Base › Ubuntu › Noble › Docker-compose.yml
 #
 #   Base docker image for Ubuntu
 #
 #   @url                  https://github.com/aetherinox/docker-base-ubuntu
 #
-#   @image:github         ghcr.io/aetherinox/base-ubuntu:latest
-#                         ghcr.io/aetherinox/base-ubuntu:22.04
-#                         ghcr.io/aetherinox/base-ubuntu:noble
+#   @image:github         ghcr.io/aetherinox/ubuntu:latest
+#                         ghcr.io/aetherinox/ubuntu:22.04
+#                         ghcr.io/aetherinox/ubuntu:noble
 #
-#   @image:dockerhub      aetherinox/base-ubuntu:latest
-#                         aetherinox/base-ubuntu:22.04
-#                         aetherinox/base-ubuntu:noble
+#   @image:dockerhub      aetherinox/ubuntu:latest
+#                         aetherinox/ubuntu:22.04
+#                         aetherinox/ubuntu:noble
 # #
 
 services:
 
     # #
-    #   Service › Ubuntu
+    #   Service › Ubuntu › Noble
     # #
 
-    ubuntu-noble:
-        container_name: ubuntu-noble
-        image: ubuntu-base:24.04
-        hostname: ubuntu
+    base-ubuntu-noble:
+        container_name: base-ubuntu-noble
+        image: noble:latest
+        hostname: noble
         environment:
             - TZ=Etc/UTC
         volumes:
