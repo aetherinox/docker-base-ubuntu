@@ -110,6 +110,12 @@ ENV S6_OVERLAY_ARCH="x86_64"
 ENV BASHIO_VERSION="0.16.2"
 
 # #
+#   ubuntu › environment
+# #
+
+ENV ROOTFS=/root-out
+
+# #
 #   detect ubuntu version from distro
 # #
 
@@ -170,14 +176,14 @@ RUN \
         MULTIDIGEST=$(jq -r ".manifests[] | select(.platform.architecture == \"${UBUNTU_ARCH}\") | .digest[7:]" < ${DIGEST}) && \
         TARBALL=$(jq -r '.layers[0].digest[7:]' < ${MULTIDIGEST}); \
     fi && \
-    mkdir /root-out && \
+    mkdir $ROOTFS && \
     tar xf \
         ${TARBALL} -C \
-        /root-out && \
+        $ROOTFS && \
     rm -rf \
-        /root-out/var/log/* \
-        /root-out/home/ubuntu \
-        /root-out/root/{.ssh,.bashrc,.profile} \
+        $ROOTFS/var/log/* \
+        $ROOTFS/home/ubuntu \
+        $ROOTFS/root/{.ssh,.bashrc,.profile} \
         /build
 
 # #
@@ -212,13 +218,13 @@ RUN \
     fi \
     \
     && wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz" && \
-       tar -C /root-out -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+       tar -C $ROOTFS -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
     wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz" && \
-       tar -C /root-out -Jxpf /tmp/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz && \
+       tar -C $ROOTFS -Jxpf /tmp/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz && \
     wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch.tar.xz" && \
-       tar -C /root-out -Jxpf /tmp/s6-overlay-symlinks-arch.tar.xz && \
+       tar -C $ROOTFS -Jxpf /tmp/s6-overlay-symlinks-arch.tar.xz && \
     wget -P /tmp "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch.tar.xz" && \
-       tar -C /root-out -Jxpf /tmp/s6-overlay-symlinks-noarch.tar.xz && unlink /root-out/usr/bin/with-contenv
+       tar -C $ROOTFS -Jxpf /tmp/s6-overlay-symlinks-noarch.tar.xz && unlink $ROOTFS/usr/bin/with-contenv
 
 # #
 #   install bashio
@@ -236,7 +242,7 @@ RUN \
 # #
 
 FROM scratch
-COPY --from=rootfs-stage /root-out/ /
+COPY --from=rootfs-stage $ROOTFS/ /
 
 # #
 #   scratch › args
