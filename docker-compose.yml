@@ -1,18 +1,20 @@
 # #
-#   @project              Docker Image › Alpine Base › Docker-compose.yml
-#   @usage                base image utilized for all docker images using Alpine with s6-overlay integration
-#   @file                 docker-compose.yml
+#   @project              Docker Image › Ubuntu Base › Docker-compose.yml
 #   @repo                 https://github.com/aetherinox/docker-base-ubuntu
+#   @file                 docker-compose.yml
+#   @usage                base image utilized for all docker images using Ubuntu with s6-overlay integration
 #
 #   @image:github         ghcr.io/aetherinox/ubuntu:latest
-#                         ghcr.io/aetherinox/ubuntu:22.04
+#                         ghcr.io/aetherinox/ubuntu:24.04
 #                         ghcr.io/aetherinox/ubuntu:noble
+#                         ghcr.io/aetherinox/ubuntu:noble-YYYYMMDD
 #
 #   @image:dockerhub      aetherinox/ubuntu:latest
-#                         aetherinox/ubuntu:22.04
+#                         aetherinox/ubuntu:24.04
 #                         aetherinox/ubuntu:noble
+#                         aetherinox/ubuntu:noble-YYYYMMDD
 #
-#                         AMD64
+#   @build                AMD64
 #                         Build the image with:
 #                             docker buildx build \
 #                               --build-arg IMAGE_NAME=ubuntu \
@@ -23,7 +25,6 @@
 #                               --build-arg IMAGE_RELEASE=stable \
 #                               --build-arg IMAGE_REGISTRY=github \
 #                               --tag aetherinox/ubuntu:latest \
-#                               --tag aetherinox/ubuntu:24.0 \
 #                               --tag aetherinox/ubuntu:24.04 \
 #                               --tag aetherinox/ubuntu:noble \
 #                               --tag aetherinox/ubuntu:noble-XXXXXXXX \
@@ -53,7 +54,6 @@
 #                               --build-arg IMAGE_RELEASE=stable \
 #                               --build-arg IMAGE_REGISTRY=github \
 #                               --tag aetherinox/ubuntu:latest \
-#                               --tag aetherinox/ubuntu:24.0 \
 #                               --tag aetherinox/ubuntu:24.04 \
 #                               --tag aetherinox/ubuntu:noble \
 #                               --tag aetherinox/ubuntu:noble-XXXXXXXX \
