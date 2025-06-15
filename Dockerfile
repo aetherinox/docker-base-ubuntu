@@ -242,6 +242,7 @@ RUN \
 # #
 
 FROM scratch
+ENV ROOTFS=/root-out
 COPY --from=rootfs-stage $ROOTFS/ /
 
 # #
@@ -271,7 +272,6 @@ ENV MODS_VERSION="v3"
 ENV PKG_INST_VERSION="v1"
 ENV AETHERXOWN_VERSION="v1"
 ENV WITHCONTENV_VERSION="v1"
-ENV ROOTFS=/root-out
 
 # #
 #   scratch › set labels
