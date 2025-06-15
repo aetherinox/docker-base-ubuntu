@@ -461,10 +461,9 @@ if [[ $script_dryrun = false ]]; then
         --build-arg IMAGE_RELEASE=$image_release \
         --build-arg IMAGE_REGISTRY=$image_registry \
         --tag $image_author/$image_name:latest \
-        --tag $image_author/$image_name:$image_version_1digit \
-        --tag $image_author/$image_name:$image_version_2digit \
         --tag $image_author/$image_name:$image_version \
-        --tag $image_author/$image_name:$image_version-$image_arch \
+        --tag $image_author/$image_name:$image_distro \
+        --tag $image_author/$image_name:$image_distro-$image_builddate \
         --file $image_dockerfile \
         --platform linux/$image_arch \
         --attest type=provenance,disabled=true \
@@ -496,10 +495,9 @@ printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ dockerfile ]  " "${c[blue2]}
 printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ network ]     " "${c[blue2]}${image_network}" "${c[end]}"
 printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ src ]         " "${c[blue2]}${image_path_build}" "${c[end]}"
 printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ tag ]         " "${c[blue2]}$image_author/$image_name:latest" "${c[grey1]}${c[end]}"
-printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ tag ]         " "${c[blue2]}$image_author/$image_name:$image_version_1digit" "${c[grey1]}${c[end]}"
-printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ tag ]         " "${c[blue2]}$image_author/$image_name:$image_version_2digit" "${c[grey1]}${c[end]}"
 printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ tag ]         " "${c[blue2]}$image_author/$image_name:$image_version" "${c[grey1]}${c[end]}"
-printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ tag ]         " "${c[blue2]}$image_author/$image_name:$image_version-$image_arch" "${c[grey1]}${c[end]}"
+printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ tag ]         " "${c[blue2]}$image_author/$image_name:$image_distro" "${c[grey1]}${c[end]}"
+printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ tag ]         " "${c[blue2]}$image_author/$image_name:$image_distro-$image_builddate" "${c[grey1]}${c[end]}"
 echo -e
 printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ build # ]     " "${c[blue2]}${image_build_id}" "${c[end]}"
 printf '%-17s %-50s %-55s\n' "        ${c[grey2]} [ build-id ]    " "${c[blue2]}${image_build_ident}" "${c[end]}"
