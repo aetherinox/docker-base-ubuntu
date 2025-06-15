@@ -364,92 +364,93 @@ RUN \
 
 RUN \
     echo "**** Ripped from Ubuntu Docker Logic ****" && \
-    rm -f /etc/apt/sources.list.d/ubuntu.sources && \
-    set -xe && \
-    echo '#!/bin/sh' \
-        > /usr/sbin/policy-rc.d && \
-    echo 'exit 101' \
-        >> /usr/sbin/policy-rc.d && \
-    chmod +x \
-        /usr/sbin/policy-rc.d && \
-    dpkg-divert --local --rename --add /sbin/initctl && \
-    cp -a \
-        /usr/sbin/policy-rc.d \
-        /sbin/initctl && \
-    sed -i \
-        's/^exit.*/exit 0/' \
-        /sbin/initctl && \
-    echo 'force-unsafe-io' \
-        > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup && \
-    echo 'DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' \
-        > /etc/apt/apt.conf.d/docker-clean && \
-    echo 'APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' \
-        >> /etc/apt/apt.conf.d/docker-clean && \
-    echo 'Dir::Cache::pkgcache ""; Dir::Cache::srcpkgcache "";' \
-        >> /etc/apt/apt.conf.d/docker-clean && \
-    echo 'Acquire::Languages "none";' \
-        > /etc/apt/apt.conf.d/docker-no-languages && \
-    echo 'Acquire::GzipIndexes "true"; Acquire::CompressionTypes::Order:: "gz";' \
-        > /etc/apt/apt.conf.d/docker-gzip-indexes && \
-    echo 'Apt::AutoRemove::SuggestsImportant "false";' \
-        > /etc/apt/apt.conf.d/docker-autoremove-suggests && \
-    mkdir -p /run/systemd && \
-    echo 'docker' \
-        > /run/systemd/container && \
+        rm -f /etc/apt/sources.list.d/ubuntu.sources && \
+        set -xe && \
+        echo '#!/bin/sh' \
+            > /usr/sbin/policy-rc.d && \
+        echo 'exit 101' \
+            >> /usr/sbin/policy-rc.d && \
+        chmod +x \
+            /usr/sbin/policy-rc.d && \
+        dpkg-divert --local --rename --add /sbin/initctl && \
+        cp -a \
+            /usr/sbin/policy-rc.d \
+            /sbin/initctl && \
+        sed -i \
+            's/^exit.*/exit 0/' \
+            /sbin/initctl && \
+        echo 'force-unsafe-io' \
+            > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup && \
+        echo 'DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' \
+            > /etc/apt/apt.conf.d/docker-clean && \
+        echo 'APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' \
+            >> /etc/apt/apt.conf.d/docker-clean && \
+        echo 'Dir::Cache::pkgcache ""; Dir::Cache::srcpkgcache "";' \
+            >> /etc/apt/apt.conf.d/docker-clean && \
+        echo 'Acquire::Languages "none";' \
+            > /etc/apt/apt.conf.d/docker-no-languages && \
+        echo 'Acquire::GzipIndexes "true"; Acquire::CompressionTypes::Order:: "gz";' \
+            > /etc/apt/apt.conf.d/docker-gzip-indexes && \
+        echo 'Apt::AutoRemove::SuggestsImportant "false";' \
+            > /etc/apt/apt.conf.d/docker-autoremove-suggests && \
+        mkdir -p /run/systemd && \
+        echo 'docker' \
+            > /run/systemd/container && \
     echo "**** install apt-utils and locales ****" && \
-    apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y \
-        apt-utils \
-        locales && \
+        apt-get update && \
+        apt-get upgrade -y && \
+        apt-get install -y \
+            apt-utils \
+            locales && \
     echo "**** install packages ****" && \
-    apt-get install -y \
-        bash \
-        sudo \
-        nano \
-        ca-certificates \
-        catatonit \
-        coreutils \
-        cron \
-        lsb-release \
-        curl \
-        findutils \
-        iproute2 \
-        git \
-        gnupg \
-        jq \
-        netcat-openbsd \
-        systemd-standalone-sysusers \
-        tzdata && \
+        apt-get install -y \
+            bash \
+            sudo \
+            nano \
+            ca-certificates \
+            catatonit \
+            coreutils \
+            cron \
+            lsb-release \
+            curl \
+            findutils \
+            iproute2 \
+            git \
+            gnupg \
+            jq \
+            netcat-openbsd \
+            systemd-standalone-sysusers \
+            tzdata && \
     echo "**** generate locale ****" && \
-    locale-gen en_US.UTF-8 && \
-    echo "**** create dockerx user and make our folders ****" && \
-    useradd --uid ${UUID1} \
-      --user-group \
-      --home /config \
-      --shell /bin/false \
-      ${USER1} && \
-    usermod -aG ${USER1} ${USER1} && \
-        usermod -aG sudo ${USER1} && \
-        usermod -aG users ${USER1} && \
-    mkdir -p \
-        /app \
-        /config \
-        /defaults \
-        /aetherxpy && \
+        locale-gen en_US.UTF-8 && \
+    echo "**** Creating user 'dockerx' and structure ****" && \
+        sudo sed -i "s|^UID_MIN.*|UID_MIN\t\t\t  100|" /etc/login.defs && \
+        useradd --uid ${UUID1} \
+            --user-group \
+            --home /config \
+            --shell /bin/false \
+        ${USER1} && \
+        usermod -aG ${USER1} ${USER1} && \
+            usermod -aG sudo ${USER1} && \
+            usermod -aG users ${USER1} && \
+        mkdir -p \
+            /app \
+            /config \
+            /defaults \
+            /aetherxpy && \
     echo "**** cleanup ****" && \
-    userdel ubuntu && \
-    mkdir -p /etc/sudoers.d/ && \
-    echo ${USER1} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USER1} && \
-    chmod 0440 /etc/sudoers.d/${USER1} && \
-    update-ca-certificates -f && \
-    apt-get autoremove -yq && \
-    apt-get clean -yq && \
-    rm -rf \
-        /tmp/* \
-        /var/lib/apt/lists/* \
-        /var/tmp/* \
-        /var/log/*
+        userdel ubuntu && \
+        mkdir -p /etc/sudoers.d/ && \
+        echo ${USER1} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USER1} && \
+        chmod 0440 /etc/sudoers.d/${USER1} && \
+        update-ca-certificates -f && \
+        apt-get autoremove -yq && \
+        apt-get clean -yq && \
+        rm -rf \
+            /tmp/* \
+            /var/lib/apt/lists/* \
+            /var/tmp/* \
+            /var/log/*
 
 # #
 #   scratch › add local files
