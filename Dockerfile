@@ -1,66 +1,75 @@
 # syntax=docker/dockerfile:1
 
 # #
-#   @project        Docker Image - Ubuntu Base
-#   @usage          base image utilized for all docker images using Ubuntu with s6-overlay integration
-#   @file           Dockerfile
-#   @repo           https://github.com/aetherinox/docker-base-ubuntu
-#   @build          To build these images, use the following commands:
+#   @project              Docker Image › Alpine Base › Dockerfile
+#   @usage                base image utilized for all docker images using Alpine with s6-overlay integration
+#   @file                 dockerfile
+#   @repo                 https://github.com/aetherinox/docker-base-ubuntu
 #
-#                   AMD64
-#                       Build the image with:
-#                           docker buildx build \
-#                             --build-arg IMAGE_NAME=ubuntu \
-#                             --build-arg IMAGE_DISTRO=noble \
-#                             --build-arg IMAGE_ARCH=amd64 \
-#                             --build-arg IMAGE_BUILDDATE=20260812 \
-#                             --build-arg IMAGE_VERSION=24.04 \
-#                             --build-arg IMAGE_RELEASE=stable \
-#                             --build-arg IMAGE_REGISTRY=github \
-#                             --tag ubuntu:latest \
-#                             --tag ubuntu:noble \
-#                             --tag ubuntu:24.04 \
-#                             --tag ubuntu:noble-20260812 \
-#                             --attest type=provenance,disabled=true \
-#                             --attest type=sbom,disabled=true \
-#                             --output type=docker \
-#                             --builder default \
-#                             --file Dockerfile \
-#                             --platform linux/arm64 \
-#                             --allow network.host \
-#                             --network host \
-#                             --no-cache \
-#                             --progress=plain \
-#                             .
+#   @image:github         ghcr.io/aetherinox/ubuntu:latest
+#                         ghcr.io/aetherinox/ubuntu:22.04
+#                         ghcr.io/aetherinox/ubuntu:noble
 #
-#                   Arm64
-#                       For arm64, make sure you install QEMU first in docker; use the command:
-#                           docker run --privileged --rm tonistiigi/binfmt --install all
+#   @image:dockerhub      aetherinox/ubuntu:latest
+#                         aetherinox/ubuntu:22.04
+#                         aetherinox/ubuntu:noble
 #
-#                       Build the image with:
-#                           docker buildx build \
-#                             --build-arg IMAGE_NAME=ubuntu \
-#                             --build-arg IMAGE_DISTRO=noble \
-#                             --build-arg IMAGE_ARCH=arm64 \
-#                             --build-arg IMAGE_BUILDDATE=20260812 \
-#                             --build-arg IMAGE_VERSION=24.04 \
-#                             --build-arg IMAGE_RELEASE=stable \
-#                             --build-arg IMAGE_REGISTRY=github \
-#                             --tag ubuntu:latest \
-#                             --tag ubuntu:noble \
-#                             --tag ubuntu:24.04 \
-#                             --tag ubuntu:noble-20260812 \
-#                             --attest type=provenance,disabled=true \
-#                             --attest type=sbom,disabled=true \
-#                             --output type=docker \
-#                             --builder default \
-#                             --file Dockerfile \
-#                             --platform linux/arm64 \
-#                             --allow network.host \
-#                             --network host \
-#                             --no-cache \
-#                             --progress=plain \
-#                             .
+#                         AMD64
+#                         Build the image with:
+#                             docker buildx build \
+#                               --build-arg IMAGE_NAME=ubuntu \
+#                               --build-arg IMAGE_DISTRO=noble \
+#                               --build-arg IMAGE_ARCH=amd64 \
+#                               --build-arg IMAGE_BUILDDATE=20260812 \
+#                               --build-arg IMAGE_VERSION=24.04 \
+#                               --build-arg IMAGE_RELEASE=stable \
+#                               --build-arg IMAGE_REGISTRY=github \
+#                               --tag aetherinox/ubuntu:latest \
+#                               --tag aetherinox/ubuntu:24.0 \
+#                               --tag aetherinox/ubuntu:24.04 \
+#                               --tag aetherinox/ubuntu:noble \
+#                               --tag aetherinox/ubuntu:noble-XXXXXXXX \
+#                               --attest type=provenance,disabled=true \
+#                               --attest type=sbom,disabled=true \
+#                               --output type=docker \
+#                               --builder default \
+#                               --file Dockerfile \
+#                               --platform linux/amd64 \
+#                               --allow network.host \
+#                               --network host \
+#                               --no-cache \
+#                               --progress=plain \
+#                               .
+#
+#                         ARM64
+#                         For arm64, make sure you install QEMU first in docker; use the command:
+#                             docker run --privileged --rm tonistiigi/binfmt --install all
+#
+#                         Build the image with:
+#                             docker buildx build \
+#                               --build-arg IMAGE_NAME=ubuntu \
+#                               --build-arg IMAGE_DISTRO=noble \
+#                               --build-arg IMAGE_ARCH=arm64 \
+#                               --build-arg IMAGE_BUILDDATE=20260812 \
+#                               --build-arg IMAGE_VERSION=24.04 \
+#                               --build-arg IMAGE_RELEASE=stable \
+#                               --build-arg IMAGE_REGISTRY=github \
+#                               --tag aetherinox/ubuntu:latest \
+#                               --tag aetherinox/ubuntu:24.0 \
+#                               --tag aetherinox/ubuntu:24.04 \
+#                               --tag aetherinox/ubuntu:noble \
+#                               --tag aetherinox/ubuntu:noble-XXXXXXXX \
+#                               --attest type=provenance,disabled=true \
+#                               --attest type=sbom,disabled=true \
+#                               --output type=docker \
+#                               --builder default \
+#                               --file Dockerfile \
+#                               --platform linux/arm64 \
+#                               --allow network.host \
+#                               --network host \
+#                               --no-cache \
+#                               --progress=plain \
+#                               .
 # #
 
 ARG ALPINE_VERSION=3.22
