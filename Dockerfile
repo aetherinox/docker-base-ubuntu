@@ -2,9 +2,9 @@
 
 # #
 #   @project              Docker Image › Alpine Base › Dockerfile
-#   @usage                base image utilized for all docker images using Alpine with s6-overlay integration
-#   @file                 dockerfile
 #   @repo                 https://github.com/aetherinox/docker-base-ubuntu
+#   @file                 dockerfile
+#   @usage                base image utilized for all docker images using Alpine with s6-overlay integration
 #
 #   @image:github         ghcr.io/aetherinox/ubuntu:latest
 #                         ghcr.io/aetherinox/ubuntu:22.04
