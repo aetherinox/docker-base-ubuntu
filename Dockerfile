@@ -10,23 +10,23 @@
 #                   AMD64
 #                       Build the image with:
 #                           docker buildx build \
-#                             --build-arg IMAGE_NAME=Ubuntu \
+#                             --build-arg IMAGE_NAME=ubuntu \
 #                             --build-arg IMAGE_DISTRO=noble \
 #                             --build-arg IMAGE_ARCH=amd64 \
 #                             --build-arg IMAGE_BUILDDATE=20260812 \
 #                             --build-arg IMAGE_VERSION=24.04 \
 #                             --build-arg IMAGE_RELEASE=stable \
 #                             --build-arg IMAGE_REGISTRY=github \
-#                             --tag ubuntu-base:latest \
-#                             --tag ubuntu-base:noble \
-#                             --tag ubuntu-base:24.04 \
-#                             --tag ubuntu-base:noble-amd64 \
+#                             --tag ubuntu:latest \
+#                             --tag ubuntu:noble \
+#                             --tag ubuntu:24.04 \
+#                             --tag ubuntu:noble-20260812 \
 #                             --attest type=provenance,disabled=true \
 #                             --attest type=sbom,disabled=true \
 #                             --output type=docker \
 #                             --builder default \
 #                             --file Dockerfile \
-#                             --platform linux/aramd64m64 \
+#                             --platform linux/arm64 \
 #                             --allow network.host \
 #                             --network host \
 #                             --no-cache \
@@ -39,17 +39,17 @@
 #
 #                       Build the image with:
 #                           docker buildx build \
-#                             --build-arg IMAGE_NAME=Ubuntu \
+#                             --build-arg IMAGE_NAME=ubuntu \
 #                             --build-arg IMAGE_DISTRO=noble \
 #                             --build-arg IMAGE_ARCH=arm64 \
 #                             --build-arg IMAGE_BUILDDATE=20260812 \
 #                             --build-arg IMAGE_VERSION=24.04 \
 #                             --build-arg IMAGE_RELEASE=stable \
 #                             --build-arg IMAGE_REGISTRY=github \
-#                             --tag ubuntu-base:latest \
-#                             --tag ubuntu-base:noble \
-#                             --tag ubuntu-base:24.04 \
-#                             --tag ubuntu-base:noble-arm64 \
+#                             --tag ubuntu:latest \
+#                             --tag ubuntu:noble \
+#                             --tag ubuntu:24.04 \
+#                             --tag ubuntu:noble-20260812 \
 #                             --attest type=provenance,disabled=true \
 #                             --attest type=sbom,disabled=true \
 #                             --output type=docker \
@@ -86,7 +86,7 @@ FROM alpine:${ALPINE_VERSION} AS rootfs-stage
 
 ARG IMAGE_REPO_AUTHOR="aetherinox"
 ARG IMAGE_REPO_NAME="docker-base-ubuntu"
-ARG IMAGE_NAME="Ubuntu"
+ARG IMAGE_NAME="ubuntu"
 ARG IMAGE_DISTRO="noble"
 ARG IMAGE_ARCH="amd64"
 ARG IMAGE_SHA1="0000000000000000000000000000000000000000"
@@ -281,7 +281,7 @@ LABEL org.opencontainers.image.development="false"
 LABEL org.opencontainers.image.sha="${IMAGE_SHA1:-0000000000000000000000000000000000000000}"
 LABEL org.opencontainers.image.architecture="${UBUNTU_ARCH:-amd64}"
 LABEL org.ubuntu.image.maintainers="${IMAGE_REPO_AUTHOR}"
-LABEL org.ubuntu.image.version="Version: ${UBUNTU_VERSION} Date: ${IMAGE_BUILDDATE:-01012026}"
+LABEL org.ubuntu.image.version="Version: ${UBUNTU_VERSION} Date: ${IMAGE_BUILDDATE:-20250615}"
 LABEL org.ubuntu.image.distro="${UBUNTU_DISTRO:-noble}"
 LABEL org.ubuntu.image.release="${IMAGE_RELEASE:-stable}"
 LABEL org.ubuntu.image.sha="${IMAGE_SHA1:-0000000000000000000000000000000000000000}"
