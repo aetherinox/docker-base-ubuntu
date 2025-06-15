@@ -202,7 +202,7 @@ script_dryrun=false
 
 image_path_build="${app_dir_this_dir}"
 image_name=ubuntu
-image_distro=nobel
+image_distro=noble
 image_author=aetherinox
 image_arch=amd64
 image_release=stable
@@ -354,7 +354,7 @@ while [ $# -gt 0 ]; do
             printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}-n${c[grey1]},${c[blue2]}  --name ${c[yellow1]}<string>${c[end]}               " "specify docker image name; must be lowercase${c[end]} ${c[navy]}<default> ${c[peach]}$image_name${c[end]}" 1>&2
             printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}-v${c[grey1]},${c[blue2]}  --version ${c[yellow1]}<string>${c[end]}            " "version tag to use for built docker image ${c[end]} ${c[navy]}<default> ${c[peach]}$image_version${c[end]}" 1>&2
             printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}-f${c[grey1]},${c[blue2]}  --dockerfile ${c[yellow1]}<string>${c[end]}         " "name of dockerfile to load ${c[navy]}<default> ${c[peach]}$image_dockerfile${c[end]}" 1>&2
-            printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}-d${c[grey1]},${c[blue2]}  --distro ${c[yellow1]}<string>${c[end]}             " "only used with Linux distros with a distro name (such as Ubuntu Nobel)${c[end]} ${c[navy]}<default> ${c[peach]}$image_distro${c[end]}" 1>&2
+            printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}-d${c[grey1]},${c[blue2]}  --distro ${c[yellow1]}<string>${c[end]}             " "only used with Linux distros with a distro name (such as Ubuntu Noble)${c[end]} ${c[navy]}<default> ${c[peach]}$image_distro${c[end]}" 1>&2
             printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}-a${c[grey1]},${c[blue2]}  --author ${c[yellow1]}<string>${c[end]}             " "author to use for docker image tag; must be lowercase${c[end]} ${c[navy]}<default> ${c[peach]}$image_author${c[end]}" 1>&2
             printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}  ${c[grey1]} ${c[blue2]}      ${c[yellow1]}${c[end]}                          " "   ${c[fuchsia2]}$app_file_this${c[end]} ${c[grey1]}--author ${c[blue1]}${image_author} ${c[grey1]}--name ${c[blue1]}${image_name}${c[grey1]} ${c[grey1]}--version ${c[blue1]}${image_version}${c[end]}" 1>&2
             printf '  %-5s %-81s %-40s\n' "    " "${c[blue2]}  ${c[grey1]} ${c[blue2]}      ${c[yellow1]}${c[end]}                          " "   ${c[grey1]}docker tag: ${c[blue1]}image_author/image_name:image_version${c[end]}" 1>&2
