@@ -168,15 +168,15 @@ These instructions outline how the Ubuntu docker image is set up, and how to bui
 
 ### Before Building
 
-Prior to building the  docker image, you **must** ensure the sections below are completed.
+Prior to building the docker image, you **must** ensure the sections below are completed.
 
 - [LF over CRLF](#lf-over-crlf)
 - [Set +x / 0755 Permissions](#set-x--0755-permissions)
-- [Set +x / 0755 Permissions](#set-x--0755-permissions)
+- [Building Different Architectures](#building-different-architectures)
 
 <br />
 
-You must ensure when you build this docker image **[🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble)**, the following conditions must be met. 
+You must ensure when you build this docker image [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble), the following conditions must be met. 
 
 <br />
 
@@ -221,7 +221,7 @@ If you attempt to build your Ubuntu docker image on Linux, and have windows CRLF
 
 <br />
 
-For the branches **[🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble)** and your main app image, you can use the following recursive commands:
+For the branches [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) and your main app image, you can use the following recursive commands:
 
 <br />
 
@@ -283,7 +283,7 @@ If you get messages `1` or `2`, then you need to run `dos2unix` on the file; oth
 
 The files contained within this repo **MUST** have `chmod 755` /  `+x` executable permissions. If you are using our Github workflow sample **[deploy-docker-github.yml](https://github.com/aetherinox/docker-base-ubuntu/blob/workflows/samples/deploy-docker-github.yml)**, this is done automatically. If you are building the images manually; you need to do this. Ensure those files have the correct permissions prior to building the Ubuntu base docker image.
 
-If you are building the **[🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble)** or your main application images, you must ensure the files in those branches have the proper permissions. All of the executable files are named `run`:
+If you are building the [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) or your main application images, you must ensure the files in those branches have the proper permissions. All of the executable files are named `run`:
 
 <br />
 
@@ -1200,7 +1200,7 @@ Any project docker image built using this base image contains Ubuntu Linux, but 
 #### ash
 
 ```shell
-docker exec -it base-ubuntu-noble: ash
+docker exec -it base-ubuntu-noble ash
 ```
 
 <br />
@@ -1208,7 +1208,7 @@ docker exec -it base-ubuntu-noble: ash
 #### sh
 
 ```shell
-docker exec -it base-ubuntu-noble: sh
+docker exec -it base-ubuntu-noble sh
 ```
 
 <br />
@@ -1216,7 +1216,7 @@ docker exec -it base-ubuntu-noble: sh
 #### bash
 
 ```shell
-docker exec -it base-ubuntu-noble: bash
+docker exec -it base-ubuntu-noble bash
 ```
 
 <br />
@@ -1928,10 +1928,10 @@ Then navigate to the newly mounted folder and add your `📄 cert.crt` and `🔑
 This base Ubuntu image contains detailed logs which will output what the docker container is currently doing. On top of built-in logs, the s6-overlay also has an env variable you can set to view logs for the container as it boots up. Modify your `🗔 docker run` command or in a `📄 docker-compose.yml` file; add the env variable `S6_VERBOSITY=5`
 
 ```yml
-    base-alpine:
-        container_name: base-alpine
-        image: aetherinox/alpine:3.22
-        hostname: alpine
+    base-ubuntu-noble:
+        container_name: base-ubuntu-noble
+        image: aetherinox/ubuntu:noble
+        hostname: noble
         environment:
             - TZ=Etc/UTC
             - S6_VERBOSITY=2
