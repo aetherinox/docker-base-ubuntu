@@ -925,7 +925,7 @@ If you are building the **stable release** images; you should see the following:
 
 <br />
 
-<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/01.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images</sup></sub></p>
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/01.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images for <code>Stable release</code></sup></sub></p>
 
 <br />
 
@@ -936,13 +936,13 @@ $ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-amd64
 
 Name:      ghcr.io/aetherinox/ubuntu:noble-amd64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
-Digest:    sha256:657fd74ebfa6577c069d1d74fec291b8b5309f762e7ad2d0d14b51de64a841b8
+Digest:    sha256:a6a5bdba912df6247c663c04d214ca4ef2e3b5d6127ac117dee6c28d9b5c6f35
 
 $ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-arm64
 
 Name:      ghcr.io/aetherinox/ubuntu:noble-arm64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
-Digest:    sha256:2750bb927d8e4434d21c9f9941632310b98bbb2729389af236888ebbc4d75dda
+Digest:    sha256:9b977c55f5fadf7e5601b908dd187597ea4865c5f5e6e232d73f7053d6477ae3
 ```
 
 <br />
@@ -954,7 +954,7 @@ If you are building the **development release** images; you should see the follo
 
 <br />
 
-<p align="center"><img style="width: 70%;text-align: center;" src="docs/img/core/04.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>noble-development-amd64</code> and <code>noble-development-arm64</code> images</sup></sub></p>
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/02.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images for <code>Development</code> release</sup></sub></p>
 
 <br />
 
@@ -967,14 +967,20 @@ $ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-development-a
 
 Name:      ghcr.io/aetherinox/ubuntu:noble-development-amd64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
-Digest:    sha256:8f36385a28c8f6eb7394d903c9a7a2765b06f94266b32628389ee9e3e3d7e69d
+Digest:    sha256:d3157db4bc9190e7926f39820a373bf04379704382de741fae272771eb587c45
 
 $ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-development-arm64
 
 Name:      ghcr.io/aetherinox/ubuntu:noble-development-arm64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
-Digest:    sha256:c719ccb034946e3f0625003f25026d001768794e38a1ba8aafc9146291d548c5
+Digest:    sha256:2819d07ccce30dcad5729b66fa0268660b7da9e304ef75694e08953ca5c1a31e
 ```
+
+<br />
+
+If you opted to build both the **stable** and **development** releases; you should see:
+
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/03.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images for both <code>Stable</code> and <code>Development</code> releases</sup></sub></p>
 
 <br />
 <br />
@@ -987,9 +993,13 @@ Digest:    sha256:c719ccb034946e3f0625003f25026d001768794e38a1ba8aafc9146291d548
 > ```shell
 > $ docker images --all --no-trunc | grep aetherinox
 > 
-> ghcr.io/aetherinox/ubuntu   noble-arm64        sha256:bb425429e98ab467fd91474701da2e5c0a7cb4a5f218a710d950eb0ff595486c   3 minutes ago   38.8MB
+> ghcr.io/aetherinox/ubuntu   noble-amd64                   sha256:d359e7dc422bf0a80ab40f6ff140da72a2d16f69a352e2e9c76c324f9e8bc50e   3 minutes ago   206MB
 > 
-> ghcr.io/aetherinox/ubuntu   noble-amd64        sha256:dea4cb91379dba289d8d3e8842d4fb7b7857faa7f3d02d5b9a043a1ee58e61d7   4 minutes ago   27.3MB
+> ghcr.io/aetherinox/ubuntu   noble-arm64                   sha256:d497b9ea99e7d0dafc48fb29cb041fcddb952103d14171086844c3f45dc9999b   4 minutes ago   238MB
+> 
+> ghcr.io/aetherinox/ubuntu   noble-development-amd64       sha256:f120bf8425df79d36fa743472aec03edde64864d2a59dd256b6ee258b62c8865   4 minutes ago   206MB
+> 
+> ghcr.io/aetherinox/ubuntu   noble-development-arm64       sha256:21e6ed47020755e4627d93d201af3309b93bd4c6a0e6250e17f19d4b15e4492f   5 minutes ago   238MB
 > ```
 >
 > To get the correct sha256 digest, use:
@@ -1018,16 +1028,26 @@ docker buildx imagetools create \
   --tag ghcr.io/aetherinox/ubuntu:24.04 \
   --tag ghcr.io/aetherinox/ubuntu:noble \
   --tag ghcr.io/aetherinox/ubuntu:noble-YYYYMMDD \
+  sha256:a6a5bdba912df6247c663c04d214ca4ef2e3b5d6127ac117dee6c28d9b5c6f35 \
+  sha256:9b977c55f5fadf7e5601b908dd187597ea4865c5f5e6e232d73f7053d6477ae3
 
-  sha256:657fd74ebfa6577c069d1d74fec291b8b5309f762e7ad2d0d14b51de64a841b8 \
-  sha256:2750bb927d8e4434d21c9f9941632310b98bbb2729389af236888ebbc4d75dda
-
-[+] Building 0.2s (4/4) FINISHED                                                                                                                                                                                                      
+# OUTPUT
+[+] Building 0.3s (4/4) FINISHED
  => [internal] pushing ghcr.io/aetherinox/ubuntu:latest               0.2s
  => [internal] pushing ghcr.io/aetherinox/ubuntu:24.04                0.2s
  => [internal] pushing ghcr.io/aetherinox/ubuntu:noble                0.2s
  => [internal] pushing ghcr.io/aetherinox/ubuntu:noble-YYYYMMDD       0.2s
 ```
+
+<br />
+
+The command above will give you the following images:
+
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/04.png"><br><sub><sup><b>Registry v2:</b> merged <code>amd64</code> and <code>arm64</code> for <code>Stable</code> release</sup></sub></p>
+
+<br />
+
+The image above will give you one image for each of the `--tag` you specified, and it will list both arcitectures for each image.
 
 <br />
 
@@ -1040,10 +1060,11 @@ For the **development** releases, use:
 
 docker buildx imagetools create \
   --tag ghcr.io/aetherinox/ubuntu:noble-development \
-  sha256:2750bb927d8e4434d21c9f9941632310b98bbb2729389af236888ebbc4d75dda \
-  sha256:657fd74ebfa6577c069d1d74fec291b8b5309f762e7ad2d0d14b51de64a841b8
+  sha256:d3157db4bc9190e7926f39820a373bf04379704382de741fae272771eb587c45 \
+  sha256:2819d07ccce30dcad5729b66fa0268660b7da9e304ef75694e08953ca5c1a31e
 
-[+] Building 0.1s (1/1) FINISHED
+# OUTPUT
+[+] Building 0.3s (1/1) FINISHED
  => [internal] pushing ghcr.io/aetherinox/ubuntu:noble-development   0.1s
 ```
 
@@ -1051,6 +1072,16 @@ docker buildx imagetools create \
 
 > [!NOTE]
 > Compared to the **stable** release which has 4 tags; the **development** release only has one tag.
+
+<br />
+
+The command above will output the following image:
+
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/05.png"><br><sub><sup><b>Registry v2:</b> merged <code>amd64</code> and <code>arm64</code> for <code>Development</code> release</sup></sub></p>
+
+<br />
+
+The image above will give you **one image**, since we only specified one `--tag`, and it will list both arcitectures for each image.
 
 <br />
 
@@ -1077,8 +1108,8 @@ docker manifest create ghcr.io/aetherinox/ubuntu:latest \
 
 # Example 2 (using sha256 hash)
 docker manifest create ghcr.io/aetherinox/ubuntu:latest \
-    --amend ghcr.io/aetherinox/ubuntu@sha256:657fd74ebfa6577c069d1d74fec291b8b5309f762e7ad2d0d14b51de64a841b8 \
-    --amend ghcr.io/aetherinox/ubuntu@sha256:2750bb927d8e4434d21c9f9941632310b98bbb2729389af236888ebbc4d75dda
+    --amend ghcr.io/aetherinox/ubuntu@sha256:a6a5bdba912df6247c663c04d214ca4ef2e3b5d6127ac117dee6c28d9b5c6f35 \
+    --amend ghcr.io/aetherinox/ubuntu@sha256:9b977c55f5fadf7e5601b908dd187597ea4865c5f5e6e232d73f7053d6477ae3
 
 # Push manifest changes to registry
 docker manifest push ghcr.io/aetherinox/ubuntu:latest
@@ -1095,7 +1126,7 @@ If you go back to your registry; you should now see multiple new entries, all wi
 
 If you are pushing to Github's GHCR; the interface will look different, as Github merges all tags into a single listing, instead of Registry v2 listing each tag on its own:
 
-<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/03.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images, and merged containers with both architectures</sup></sub></p>
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/06.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images, and merged containers with both architectures</sup></sub></p>
 
 <br />
 
