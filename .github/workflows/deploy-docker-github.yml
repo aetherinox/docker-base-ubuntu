@@ -632,22 +632,22 @@ jobs:
                       #  tag            latest = yes          ( no dev )
                       type=raw,value=latest,enable=${{ !inputs.DEV_RELEASE }}
 
-                      #  tag            add pr tag            ( PR or push only )
+                      #  tag          add pr tag                ( PR or push only )
                       type=ref,enable=${{ github.event_name == 'pull_request' || github.event_name == 'push' }},priority=600,prefix=,suffix=,event=tag
 
-                      #  tag            add 24.04             ( dispatch only + no dev )
-                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=450,prefix=,suffix=,value=${{ env.IMAGE_VERSION }}
+                      #  tag          tag: 24.04                ( dispatch only + no dev )
+                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_VERSION }}
 
-                      #  tag            add noble,jammy,etc   ( dispatch only + no dev )
+                      #  tag          tag: noble                ( dispatch only + no dev )
                       type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=425,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}
 
-                      #  tag            add noble-20250127    ( dispatch only + no dev )
-                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}-${{ env.NOW_DOCKER }}
+                      #  tag          tag: noble-20250127       ( dispatch only + no dev )
+                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=450,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}-${{ env.NOW_DOCKER }}
 
-                      #  tag            add noble-development ( dispatch only + only dev )
-                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == true }},priority=300,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}-development
+                      #  tag          tag: noble-development    ( dispatch only + only dev )
+                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == true }},priority=500,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}-development
 
-                      #  tag            add noble-development   ( distro + only dev )
+                      #  tag          add noble-development     ( distro + only dev )
                       type=raw,enable=${{ inputs.DEV_RELEASE }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}-development
                   flavor: |
                       latest=false
