@@ -55,6 +55,9 @@ Normal users should not need to modify the files in this repository.
       - [Stable - arm64](#stable---arm64)
       - [Development - amd64](#development---amd64)
       - [Development - arm64](#development---arm64)
+    - [Merging Architectures](#merging-architectures)
+      - [Using `Buildx Imagetools`](#using-buildx-imagetools)
+      - [Using `Manifest Create`](#using-manifest-create)
 - [Using Image](#using-image)
 - [Extra Notes](#extra-notes)
   - [Accessing Container Shell](#accessing-container-shell)
@@ -913,8 +916,11 @@ After completing the `docker buildx` commands above; you should now have a few n
 - `--tag ghcr.io/aetherinox/ubuntu:noble-development-arm64`
 
 <br />
+<br />
 
-Next, we need to take these two images, and merge them into one so that both architectures are available without having to push separate images. You need to obtain the SHA256 hash digest for the `amd64` and `arm64` images. You can go to the registry where you uploaded the images and then copy them. Or you can run the commands specified below depending on which release type you want:
+#### Merging Architectures
+
+Next, we need to take these two images, and merge them into one so that both architectures are available without having to push separate images. You need to obtain the `SHA256` hash digest for the `amd64` and `arm64` images. You can go to the registry where you uploaded the images and then copy them. Or you can run the commands specified below depending on which release type you want:
 
 <br />
 <br />
@@ -994,11 +1000,8 @@ If you opted to build both the **stable** and **development** releases; you shou
 > $ docker images --all --no-trunc | grep aetherinox
 > 
 > ghcr.io/aetherinox/ubuntu   noble-amd64                   sha256:d359e7dc422bf0a80ab40f6ff140da72a2d16f69a352e2e9c76c324f9e8bc50e   3 minutes ago   206MB
-> 
 > ghcr.io/aetherinox/ubuntu   noble-arm64                   sha256:d497b9ea99e7d0dafc48fb29cb041fcddb952103d14171086844c3f45dc9999b   4 minutes ago   238MB
-> 
 > ghcr.io/aetherinox/ubuntu   noble-development-amd64       sha256:f120bf8425df79d36fa743472aec03edde64864d2a59dd256b6ee258b62c8865   4 minutes ago   206MB
-> 
 > ghcr.io/aetherinox/ubuntu   noble-development-arm64       sha256:21e6ed47020755e4627d93d201af3309b93bd4c6a0e6250e17f19d4b15e4492f   5 minutes ago   238MB
 > ```
 >
@@ -1010,9 +1013,22 @@ If you opted to build both the **stable** and **development** releases; you shou
 > 
 
 <br />
+
+At this point, you should have all of your images created for amd64 and arm64, however, each image sits by itself. If you want to merge both architectures into a single image; you must manipulate the manifest to merge them. The next section will explain how to do so.
+
+There are two ways to do this; you can pick either one:
+
+- [Using Buildx Imagetools](#using-buildx-imagetools)
+- [Using Manifest Create](#using-manifest-create)
+
+<br />
 <br />
 
-Once you have the correct `SHA256` hash digests; paste them into the command below. This command is where you can specify the real `--tag` that the public image will have. The previous tags were simply placeholders and no longer matter.
+##### Using `Buildx Imagetools`
+
+This section explains how you to take your individual images, and merge them so that you end up with a single image with both arcitectures.
+
+Once you have all of your images list of `SHA256` hash digests; paste them into the command below. This command is where you can specify the real `--tag` that the public image will have. The previous tags were simply placeholders and no longer matter.
 
 <br />
 
@@ -1071,7 +1087,7 @@ docker buildx imagetools create \
 <br />
 
 > [!NOTE]
-> Compared to the **stable** release which has 4 tags; the **development** release only has one tag.
+> Compared to the **stable** release which has 4 tags; the **development** release only has 1 tag.
 
 <br />
 
@@ -1083,17 +1099,24 @@ The command above will output the following image:
 
 The image above will give you **one image**, since we only specified one `--tag`, and it will list both arcitectures for each image.
 
+Alternatively, you could use the [🗔 manifest create](#using-manifest-create) command
+
+<br />
 <br />
 
-Alternatively, you could use the `🗔 manifest create` command; as an example, you can merge multiple architecture images together into a single image. The top line with `🔖 aetherinox/ubuntu:latest` can be any name. However, all images after `--amend` MUST be already existing images uploaded to the registry.
+##### Using `Manifest Create`
+
+This section explains how you to take your individual images, and merge them so that you end up with a single image with both arcitectures.
+
+As an example, you can merge multiple architecture images together into a single image. The top line with `🔖 aetherinox/ubuntu:noble` can be any name. However, all images after `--amend` MUST be already existing images uploaded to the registry.
 
 ```shell
-docker manifest create ghcr.io/aetherinox/ubuntu:latest \
-    --amend ghcr.io/aetherinox/ubuntu:latest-amd64 \
-    --amend ghcr.io/aetherinox/ubuntu:latest-arm32v7 \
-    --amend ghcr.io/aetherinox/ubuntu:latest-arm64v8
+docker manifest create ghcr.io/aetherinox/ubuntu:noble \
+    --amend ghcr.io/aetherinox/ubuntu:noble-amd64 \
+    --amend ghcr.io/aetherinox/ubuntu:noble-arm32v7 \
+    --amend ghcr.io/aetherinox/ubuntu:noble-arm64v8
 
-docker manifest push ghcr.io/aetherinox/ubuntu:latest
+docker manifest push ghcr.io/aetherinox/ubuntu:noble
 ```
 
 <br />
@@ -1101,19 +1124,135 @@ docker manifest push ghcr.io/aetherinox/ubuntu:latest
 In this example, we take the existing two files we created earlier, and merge them into one. You can either specify the image by `SHA256 digest`, or tag:
 
 ```shell
-# Example 1 (using tag)
-docker manifest create ghcr.io/aetherinox/ubuntu:latest \
+# Stable - Create Manifest
+$ docker manifest create ghcr.io/aetherinox/ubuntu:noble \
     --amend ghcr.io/aetherinox/ubuntu:noble-amd64 \
     --amend ghcr.io/aetherinox/ubuntu:noble-arm64
 
-# Example 2 (using sha256 hash)
-docker manifest create ghcr.io/aetherinox/ubuntu:latest \
+# OUTPUT
+Created manifest list ghcr.io/aetherinox/ubuntu:noble
+```
+
+<br />
+
+Then push the manifest to your registry:
+
+```shell
+# Push Manifest
+$ docker manifest push ghcr.io/aetherinox/ubuntu:noble
+
+# OUTPUT
+sha256:f0a1e3ecaabed06006bd03ecab5be5e8edbcd55cf22a3b14f3aa9b8849d82910
+```
+
+<br />
+
+If you look at your docker registry, you should see:
+
+<br />
+
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/06.png"><br><sub><sup><b>Registry v2:</b> merged <code>amd64</code> and <code>arm64</code> for <code>Stable</code> release; using <code>docker manifest create</code></sup></sub></p>
+
+
+<br />
+
+For the **development** release:
+
+```shell
+# Development - Create Manifest
+docker manifest create ghcr.io/aetherinox/ubuntu:noble-development \
+    --amend ghcr.io/aetherinox/ubuntu:noble-development-amd64 \
+    --amend ghcr.io/aetherinox/ubuntu:noble-development-arm64
+
+# OUTPUT
+Created manifest list ghcr.io/aetherinox/ubuntu:noble-development
+```
+
+<br />
+
+Then push the manifest to your registry:
+
+```shell
+# Push Manifest
+$ docker manifest push ghcr.io/aetherinox/ubuntu:noble-development
+
+# OUTPUT
+sha256:a0ec1af9d2d9f4c2f45ab1f0cf9c5d60f8dc2660b1eb1011a0636b971a804c53
+```
+
+<br />
+
+If you look at your docker registry, you should see:
+
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/07.png"><br><sub><sup><b>Registry v2:</b> merged <code>amd64</code> and <code>arm64</code> for <code>Development</code> release; using <code>docker manifest create</code></sup></sub></p>
+
+<br />
+
+> [!NOTE]
+> If you push the manifest to your online registry, and notice that the image contains multiple of the same architecture images; you need to remove the manifest and re-create it using:
+>
+> ```shell
+> docker manifest rm ghcr.io/aetherinox/ubuntu:nobel
+> ```
+
+<br />
+
+```shell
+# Example 2 - Development - (using tag)
+docker manifest create ghcr.io/aetherinox/ubuntu:noble-development \
+    --amend ghcr.io/aetherinox/ubuntu:noble-development-amd64 \
+    --amend ghcr.io/aetherinox/ubuntu:noble-development-arm64
+```
+
+
+
+
+
+
+
+
+
+
+
+<br />
+
+If you want to create the manifest using the `SHA256`, you can use one of these altnerative commands:
+
+```shell
+# Example 1 - Stable - (using sha256 hash)
+docker manifest create ghcr.io/aetherinox/ubuntu:noble-development \
     --amend ghcr.io/aetherinox/ubuntu@sha256:a6a5bdba912df6247c663c04d214ca4ef2e3b5d6127ac117dee6c28d9b5c6f35 \
     --amend ghcr.io/aetherinox/ubuntu@sha256:9b977c55f5fadf7e5601b908dd187597ea4865c5f5e6e232d73f7053d6477ae3
 
+# Example 2 - Development - (using sha256 hash)
+docker manifest create ghcr.io/aetherinox/ubuntu:noble-development \
+    --amend ghcr.io/aetherinox/ubuntu@sha256:2819d07ccce30dcad5729b66fa0268660b7da9e304ef75694e08953ca5c1a31e \
+    --amend ghcr.io/aetherinox/ubuntu@sha256:d3157db4bc9190e7926f39820a373bf04379704382de741fae272771eb587c45
+
+# Push Manifest
+docker manifest push ghcr.io/aetherinox/ubuntu:noble-development
+
+# OUTPUT
+Created manifest list ghcr.io/aetherinox/ubuntu:noble-development
+```
+
+<br />
+
+After completing one of the commands above, you should see:
+
+```shell
+
+
 # Push manifest changes to registry
 docker manifest push ghcr.io/aetherinox/ubuntu:latest
+
+
+sha256:a0ec1af9d2d9f4c2f45ab1f0cf9c5d60f8dc2660b1eb1011a0636b971a804c53
 ```
+
+
+
+
 
 <br />
 
@@ -1126,7 +1265,7 @@ If you go back to your registry; you should now see multiple new entries, all wi
 
 If you are pushing to Github's GHCR; the interface will look different, as Github merges all tags into a single listing, instead of Registry v2 listing each tag on its own:
 
-<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/06.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images, and merged containers with both architectures</sup></sub></p>
+<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/10.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images, and merged containers with both architectures</sup></sub></p>
 
 <br />
 
