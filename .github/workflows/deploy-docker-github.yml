@@ -879,7 +879,7 @@ jobs:
                   echo "‎"
                   echo "‎"
                   echo "---- [ INPUTS ] ----------------------------------------------------------------------------------------"
-                  echo "inputs.IMAGE_DISTRO ...................... ${{ inputs.IMAGE_NAME }}"
+                  echo "inputs.IMAGE_NAME ........................ ${{ inputs.IMAGE_NAME }}"
                   echo "inputs.IMAGE_DISTRO ...................... ${{ inputs.IMAGE_DISTRO }}"
                   echo "inputs.IMAGE_VERSION ..................... ${{ inputs.IMAGE_VERSION }}"
                   echo "inputs.IMAGE_GHCR_AUTHOR ................. ${{ inputs.IMAGE_GHCR_AUTHOR }}"
