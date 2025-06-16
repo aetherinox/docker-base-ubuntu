@@ -2,7 +2,7 @@
 #   @type               github workflow
 #   @author             Aetherinox
 #   @url                https://github.com/Aetherinox
-#   @usage              deploys docker container to Github GHCR and send message to discord
+#   @usage              builds and releases a new docker image to Dockerhub and send message to discord
 #                       upload this workflow to the following branches:
 #                           - https://github.com/Aetherinox/docker-base-ubuntu/tree/main
 #                           - https://github.com/Aetherinox/docker-base-ubuntu/tree/docker/ubuntu-*
@@ -259,7 +259,7 @@ jobs:
                   NOW_LONG="$(date +'%m-%d-%Y %H:%M')"                                              #  02-25-2025 12:49
                   echo "NOW_LONG=${NOW_LONG}" >> $GITHUB_ENV
 
-                  NOW_DOCKER="$(date +'%Y%m%d')"                                                    #  20250225
+                  NOW_DOCKER="$(date +'%Y%m%d')"                                                    #  20250225 | YYYYMMDD
                   echo "NOW_DOCKER=${NOW_DOCKER}" >> $GITHUB_ENV
 
                   NOW_DOCKER_TS="$(date -u +'%FT%T.%3NZ')"                                          #  2025-02-25T12:50:11.569Z
@@ -270,6 +270,12 @@ jobs:
 
                   SHA1_GH="$(echo ${GITHUB_SHA})"                                                   #  71fad013cfce9116ec62779e4a7e627fe4c33627
                   echo "SHA1_GH=${SHA1_GH}" >> $GITHUB_ENV
+
+                  #  parse version into segments
+                  IFS=. read major minor patch <<< "${{ env.IMAGE_VERSION }}"
+                  echo "major=${major}" >> $GITHUB_OUTPUT
+                  echo "minor=${minor}" >> $GITHUB_OUTPUT
+                  echo "patch=${patch}" >> $GITHUB_OUTPUT
 
                   PKG_VER_1DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -d '.' -f1-1)"              #  3.22 > 3
                   echo "PKG_VER_1DIGIT=${PKG_VER_1DIGIT}" >> $GITHUB_ENV
@@ -365,7 +371,7 @@ jobs:
               with:
                   tag: "${{ env.IMAGE_VERSION }}"
                   tag_exists_error: false
-                  message: '${{ env.IMAGE_DISTRO }}-${{ env.IMAGE_VERSION }}'
+                  message: '${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}:${{ env.IMAGE_VERSION }}'
                   gpg_private_key: ${{ secrets.ADMINSERV_GPG_KEY_ASC }}
                   gpg_passphrase: ${{ secrets.ADMINSERV_GPG_PASSPHRASE }}
 
@@ -429,7 +435,7 @@ jobs:
                   NOW_LONG="$(date +'%m-%d-%Y %H:%M')"                                              #  02-25-2025 12:49
                   echo "NOW_LONG=${NOW_LONG}" >> $GITHUB_ENV
 
-                  NOW_DOCKER="$(date +'%Y%m%d')"                                                    #  20250225
+                  NOW_DOCKER="$(date +'%Y%m%d')"                                                    #  20250225 | YYYYMMDD
                   echo "NOW_DOCKER=${NOW_DOCKER}" >> $GITHUB_ENV
 
                   NOW_DOCKER_TS="$(date -u +'%FT%T.%3NZ')"                                          #  2025-02-25T12:50:11.569Z
@@ -441,10 +447,16 @@ jobs:
                   SHA1_GH="$(echo ${GITHUB_SHA})"                                                   #  71fad013cfce9116ec62779e4a7e627fe4c33627
                   echo "SHA1_GH=${SHA1_GH}" >> $GITHUB_ENV
 
-                  PKG_VER_1DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -d '.' -f1-1)"              #  24.04 > 22
+                  #  parse version into segments
+                  IFS=. read major minor patch <<< "${{ env.IMAGE_VERSION }}"
+                  echo "major=${major}" >> $GITHUB_OUTPUT
+                  echo "minor=${minor}" >> $GITHUB_OUTPUT
+                  echo "patch=${patch}" >> $GITHUB_OUTPUT
+
+                  PKG_VER_1DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -d '.' -f1-1)"              #  3.22 > 3
                   echo "PKG_VER_1DIGIT=${PKG_VER_1DIGIT}" >> $GITHUB_ENV
 
-                  PKG_VER_2DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -f2 -d ":" | cut -c1-4)"    #  24.04 > 22.0
+                  PKG_VER_2DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -f2 -d ":" | cut -c1-4)"    #  3.22 > 3.2
                   echo "PKG_VER_2DIGIT=${PKG_VER_2DIGIT}" >> $GITHUB_ENV
 
                   echo "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
@@ -511,7 +523,7 @@ jobs:
 
             - name: '🕛 Set Vars'
               run: |
-                  echo "REGISTRY_REPO_ORG_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }}/${{ env.IMAGE_DISTRO }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}        #  aetherinox/docker-base-ubuntu
+                  echo "REGISTRY_REPO_ORG_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }}/${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}          #  aetherinox/docker-base-ubuntu
                   echo "REGISTRY_REPO_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}                                    #  aetherinox
 
             # #
@@ -615,7 +627,7 @@ jobs:
               uses: docker/metadata-action@v5
               with:
                   images: |
-                      ghcr.io/${{ env.REGISTRY_REPO_AUTHOR_LC }}/${{ env.IMAGE_DISTRO }}
+                      ghcr.io/${{ env.REGISTRY_REPO_AUTHOR_LC }}/${{ env.IMAGE_NAME }}
                   tags: |
                       #  tag            latest = yes          ( no dev )
                       type=raw,value=latest,enable=${{ !inputs.DEV_RELEASE }}
@@ -624,10 +636,13 @@ jobs:
                       type=ref,enable=${{ github.event_name == 'pull_request' || github.event_name == 'push' }},priority=600,prefix=,suffix=,event=tag
 
                       #  tag            add 24.04             ( dispatch only + no dev )
-                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_VERSION }}
+                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=450,prefix=,suffix=,value=${{ env.IMAGE_VERSION }}
 
                       #  tag            add noble,jammy,etc   ( dispatch only + no dev )
-                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}
+                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=425,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}
+
+                      #  tag            add noble-20250127    ( dispatch only + no dev )
+                      type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == false }},priority=400,prefix=,suffix=,value=${{ env.IMAGE_DISTRO }}-${{ env.NOW_DOCKER }}
 
                       #  tag            add development       ( dispatch only + only dev )
                       type=raw,enable=${{ github.event_name == 'workflow_dispatch' && inputs.DEV_RELEASE == true }},priority=300,prefix=,suffix=,value=development
@@ -864,7 +879,7 @@ jobs:
                   echo "‎"
                   echo "‎"
                   echo "---- [ INPUTS ] ----------------------------------------------------------------------------------------"
-                  echo "inputs.IMAGE_DISTRO ...................... ${{ inputs.IMAGE_NAME }}"
+                  echo "inputs.IMAGE_NAME ........................ ${{ inputs.IMAGE_NAME }}"
                   echo "inputs.IMAGE_DISTRO ...................... ${{ inputs.IMAGE_DISTRO }}"
                   echo "inputs.IMAGE_VERSION ..................... ${{ inputs.IMAGE_VERSION }}"
                   echo "inputs.IMAGE_GHCR_AUTHOR ................. ${{ inputs.IMAGE_GHCR_AUTHOR }}"
@@ -952,11 +967,11 @@ jobs:
                   embed-url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   embed-thumbnail-url: ${{ env.DISCORD_BOT_EMBED_THUMBNAIL }}
                   embed-description: |
-                      ### 📦 ᲼Deploy (${{ env.IMAGE_REGISTRY }}) ᲼${{ job.status == 'success' && '✅' || '❌' }}᲼ › `${{ env.IMAGE_DISTRO }}-${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
+                      ### 📦 ᲼Deploy (${{ env.IMAGE_REGISTRY }}) ᲼${{ job.status == 'success' && '✅' || '❌' }}᲼ › `${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}:${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
                       ${{ inputs.DEV_RELEASE == true && '### ⚠️⚠️ Development / Pre-release ⚠️⚠️' || '' }}
 
-                      A new version of the docker container `${{ env.IMAGE_DISTRO }}` has been released from Github to ${{ env.IMAGE_REGISTRY }} GHCR. The image is available at:
-                      - https://github.com/${{ github.repository }}/pkgs/container/${{ env.IMAGE_DISTRO }}
+                      A new version of the docker container `${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}` has been released from Github to ${{ env.IMAGE_REGISTRY }} GHCR. The image is available at:
+                      - https://github.com/${{ github.repository }}/pkgs/container/${{ env.IMAGE_NAME }}
 
                       - Version: `${{ env.IMAGE_VERSION }}`
                       - Release Type: `${{ inputs.DEV_RELEASE == true && '⚠️⚠️ Development / Pre-release ⚠️⚠️' || 'Stable' }}`
@@ -965,7 +980,7 @@ jobs:
                       - Pull (arm64): `docker pull ghcr.io/${{ env.REGISTRY_REPO_ORG_AUTHOR_LC }}@${{ steps.task_release_gh_push_arm64.outputs.digest }}`
                       - Dry Run: `${{ inputs.DRY_RUN }}`
                       - Source: `${{ env.IMAGE_REGISTRY }}` https://github.com/${{ github.repository }}
-                      - Docker Image: `${{ env.IMAGE_DISTRO }}-${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
+                      - Docker Image: `${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}:${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
                       - Branch: `${{ github.ref_name }}`
                       - Workflow: `${{ github.workflow }} (#${{github.run_number}})`
                       - Runner: `${{ runner.name }}`
@@ -1052,7 +1067,7 @@ jobs:
                   NOW_LONG="$(date +'%m-%d-%Y %H:%M')"                                              #  02-25-2025 12:49
                   echo "NOW_LONG=${NOW_LONG}" >> $GITHUB_ENV
 
-                  NOW_DOCKER="$(date +'%Y%m%d')"                                                    #  20250225
+                  NOW_DOCKER="$(date +'%Y%m%d')"                                                    #  20250225 | YYYYMMDD
                   echo "NOW_DOCKER=${NOW_DOCKER}" >> $GITHUB_ENV
 
                   NOW_DOCKER_TS="$(date -u +'%FT%T.%3NZ')"                                          #  2025-02-25T12:50:11.569Z
@@ -1064,10 +1079,16 @@ jobs:
                   SHA1_GH="$(echo ${GITHUB_SHA})"                                                   #  71fad013cfce9116ec62779e4a7e627fe4c33627
                   echo "SHA1_GH=${SHA1_GH}" >> $GITHUB_ENV
 
-                  PKG_VER_1DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -d '.' -f1-1)"              #  3.22 > 3
+                  #  parse version into segments
+                  IFS=. read major minor patch <<< "${{ env.IMAGE_VERSION }}"
+                  echo "major=${major}" >> $GITHUB_OUTPUT
+                  echo "minor=${minor}" >> $GITHUB_OUTPUT
+                  echo "patch=${patch}" >> $GITHUB_OUTPUT
+
+                  PKG_VER_1DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -d '.' -f1-1)"              #  24.04 > 24
                   echo "PKG_VER_1DIGIT=${PKG_VER_1DIGIT}" >> $GITHUB_ENV
 
-                  PKG_VER_2DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -f2 -d ":" | cut -c1-3)"    #  3.22 > 3.2
+                  PKG_VER_2DIGIT="$(echo ${{ env.IMAGE_VERSION }} | cut -f2 -d ":" | cut -c1-4)"    #  24.04 > 24.0
                   echo "PKG_VER_2DIGIT=${PKG_VER_2DIGIT}" >> $GITHUB_ENV
 
                   echo "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
