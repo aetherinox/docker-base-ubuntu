@@ -1168,12 +1168,12 @@ To use your new docker Ubuntu base image, you simply need to reference it in you
 ```dockerfile
 ARG IMAGE_ARCH=amd64
 ARG IMAGE_VERSION=24.04
-FROM --platform=linux/${IMAGE_ARCH} ghcr.io/aetherinox/ubuntu::${IMAGE_VERSION}
+FROM --platform=linux/${IMAGE_ARCH} ghcr.io/aetherinox/ubuntu:${IMAGE_VERSION}
 ```
 
 <br />
 
-In the Dockerfile code above, you will see that we are pulling from `ghcr.io/aetherinox/ubuntu::${IMAGE_VERSION}`; where `${IMAGE_VERSION}` gets replaced with the version of Ubuntu we wish to use. At the time of writing this, it is `3.22`.
+In the Dockerfile code above, you will see that we are pulling from `ghcr.io/aetherinox/ubuntu:${IMAGE_VERSION}`; where `${IMAGE_VERSION}` gets replaced with the version of Ubuntu we wish to use. At the time of writing this, it is `24.04`.
 
 <br />
 
