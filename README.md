@@ -1189,7 +1189,7 @@ If you look at your docker registry, you should see:
 <br />
 
 > [!NOTE]
-> If you push the manifest to your online registry, and notice that the image contains multiple of the same architecture images; you need to remove the manifest and re-create it using:
+> If you push the manifest to your online registry, and notice that the image contains duplicate architecture images; you need to remove the manifest and re-create it using:
 >
 > ```shell
 > docker manifest rm ghcr.io/aetherinox/ubuntu:nobel
@@ -1197,62 +1197,27 @@ If you look at your docker registry, you should see:
 
 <br />
 
-```shell
-# Example 2 - Development - (using tag)
-docker manifest create ghcr.io/aetherinox/ubuntu:noble-development \
-    --amend ghcr.io/aetherinox/ubuntu:noble-development-amd64 \
-    --amend ghcr.io/aetherinox/ubuntu:noble-development-arm64
-```
-
-
-
-
-
-
-
-
-
-
-
-<br />
-
 If you want to create the manifest using the `SHA256`, you can use one of these altnerative commands:
 
 ```shell
 # Example 1 - Stable - (using sha256 hash)
-docker manifest create ghcr.io/aetherinox/ubuntu:noble-development \
-    --amend ghcr.io/aetherinox/ubuntu@sha256:a6a5bdba912df6247c663c04d214ca4ef2e3b5d6127ac117dee6c28d9b5c6f35 \
-    --amend ghcr.io/aetherinox/ubuntu@sha256:9b977c55f5fadf7e5601b908dd187597ea4865c5f5e6e232d73f7053d6477ae3
+docker manifest create ghcr.io/aetherinox/ubuntu:noble \
+    --amend ghcr.io/aetherinox/ubuntu@sha256:9b977c55f5fadf7e5601b908dd187597ea4865c5f5e6e232d73f7053d6477ae3 \
+    --amend ghcr.io/aetherinox/ubuntu@sha256:a6a5bdba912df6247c663c04d214ca4ef2e3b5d6127ac117dee6c28d9b5c6f35
+
+# Push Manifest
+docker manifest push ghcr.io/aetherinox/ubuntu:noble
+
+
 
 # Example 2 - Development - (using sha256 hash)
 docker manifest create ghcr.io/aetherinox/ubuntu:noble-development \
-    --amend ghcr.io/aetherinox/ubuntu@sha256:2819d07ccce30dcad5729b66fa0268660b7da9e304ef75694e08953ca5c1a31e \
-    --amend ghcr.io/aetherinox/ubuntu@sha256:d3157db4bc9190e7926f39820a373bf04379704382de741fae272771eb587c45
+    --amend ghcr.io/aetherinox/ubuntu@sha256:d3157db4bc9190e7926f39820a373bf04379704382de741fae272771eb587c45 \
+    --amend ghcr.io/aetherinox/ubuntu@sha256:2819d07ccce30dcad5729b66fa0268660b7da9e304ef75694e08953ca5c1a31e
 
 # Push Manifest
 docker manifest push ghcr.io/aetherinox/ubuntu:noble-development
-
-# OUTPUT
-Created manifest list ghcr.io/aetherinox/ubuntu:noble-development
 ```
-
-<br />
-
-After completing one of the commands above, you should see:
-
-```shell
-
-
-# Push manifest changes to registry
-docker manifest push ghcr.io/aetherinox/ubuntu:latest
-
-
-sha256:a0ec1af9d2d9f4c2f45ab1f0cf9c5d60f8dc2660b1eb1011a0636b971a804c53
-```
-
-
-
-
 
 <br />
 
