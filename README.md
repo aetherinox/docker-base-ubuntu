@@ -1925,7 +1925,21 @@ Then navigate to the newly mounted folder and add your `📄 cert.crt` and `🔑
 
 ### Logs
 
-This base Ubuntu image contains detailed logs which will output what the docker container is currently doing.
+This base Ubuntu image contains detailed logs which will output what the docker container is currently doing. On top of built-in logs, the s6-overlay also has an env variable you can set to view logs for the container as it boots up. Modify your `🗔 docker run` command or in a `📄 docker-compose.yml` file; add the env variable `S6_VERBOSITY=5`
+
+```yml
+    base-alpine:
+        container_name: base-alpine
+        image: aetherinox/alpine:3.22
+        hostname: alpine
+        environment:
+            - TZ=Etc/UTC
+            - S6_VERBOSITY=2
+```
+
+<br />
+
+You can pick a number between `1-5`; with `5` being the most verbose and will output every little thing that the container is doing. The default value is `S6_VERBOSITY=2`.
 
 <br />
 
