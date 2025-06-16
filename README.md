@@ -88,9 +88,9 @@ Normal users should not need to modify the files in this repository.
 
 ## About
 
-The files contained within this branch `docker/ubuntu-noble` are utilized as a foundation. This base image only provides us with a docker image which has Ubuntu linux, Nginx, a few critical packages, and the **[s6-overlay](https://github.com/just-containers/s6-overlay)** plugin.
+The files contained within this branch [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) are utilized as a foundation. This base image only provides us with a docker image which has Ubuntu linux, Nginx, a few critical packages, and the **[s6-overlay](https://github.com/just-containers/s6-overlay)** plugin.
 
-This branch `docker/ubuntu-noble` does **NOT** contain any applications. It is only to be used as a base image which will be called when you build your main app's `📄 Dockerfile`.
+This branch [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) does **NOT** contain any applications. It is only to be used as a base image which will be called when you build your main app's `📄 Dockerfile`.
 
 <br />
 <br />
@@ -135,7 +135,7 @@ To build a docker image using this base and the actual app you want to release, 
 <br />
 
 > [!WARNING]
-> You should NOT need to modify any of the files within this branch `docker/ubuntu-noble` unless you absolutely know what you are doing.
+> You should NOT need to modify any of the files within this branch [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) unless you absolutely know what you are doing.
 
 <br />
 
@@ -1177,7 +1177,7 @@ After you reference the Ubuntu image, you can then write the remaining parts of 
 
 ## Extra Notes
 
-The following are other things to take into consideration when creating the **[docker/ubuntu-noble:](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble)** and your app docker image that will use this base image:
+The following are other things to take into consideration when creating the [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) and your app docker image that will use this base image:
 
 <br />
 
@@ -1825,7 +1825,7 @@ When you start your project's docker image up, this service will be executed.
 
 ### Custom Docker Image Scripts
 
-The `docker/ubuntu-noble:` and any project docker images which use this Ubuntu base image, support the ability of adding custom scripts that will be ran when the container is started. To create / add a new custom script to the container, you need to create a new folder in the container source files `/root` folder
+The [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) and any project docker images which use this Ubuntu base image, support the ability of adding custom scripts that will be ran when the container is started. To create / add a new custom script to the container, you need to create a new folder in the container source files `/root` folder
 
 ```shell
 mkdir -p /root/custom-cont-init.d/
