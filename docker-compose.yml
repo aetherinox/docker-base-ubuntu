@@ -82,6 +82,7 @@ services:
         hostname: noble
         environment:
             - TZ=Etc/UTC
+            - S6_VERBOSITY=2
         volumes:
             - /etc/timezone:/etc/timezone:ro
             - /etc/localtime:/etc/localtime:ro
