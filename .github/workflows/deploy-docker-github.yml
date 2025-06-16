@@ -371,7 +371,7 @@ jobs:
               with:
                   tag: "${{ env.IMAGE_VERSION }}"
                   tag_exists_error: false
-                  message: '${{ env.IMAGE_DISTRO }}-${{ env.IMAGE_VERSION }}'
+                  message: '${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}:${{ env.IMAGE_VERSION }}'
                   gpg_private_key: ${{ secrets.ADMINSERV_GPG_KEY_ASC }}
                   gpg_passphrase: ${{ secrets.ADMINSERV_GPG_PASSPHRASE }}
 
@@ -523,7 +523,7 @@ jobs:
 
             - name: '🕛 Set Vars'
               run: |
-                  echo "REGISTRY_REPO_ORG_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }}/${{ env.IMAGE_DISTRO }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}        #  aetherinox/docker-base-ubuntu
+                  echo "REGISTRY_REPO_ORG_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }}/${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}          #  aetherinox/docker-base-ubuntu
                   echo "REGISTRY_REPO_AUTHOR_LC=`echo ${{ env.IMAGE_GHCR_AUTHOR }} | tr '[:upper:]' '[:lower:]'`" >> ${GITHUB_ENV}                                    #  aetherinox
 
             # #
@@ -627,7 +627,7 @@ jobs:
               uses: docker/metadata-action@v5
               with:
                   images: |
-                      ghcr.io/${{ env.REGISTRY_REPO_AUTHOR_LC }}/${{ env.IMAGE_DISTRO }}
+                      ghcr.io/${{ env.REGISTRY_REPO_AUTHOR_LC }}/${{ env.IMAGE_NAME }}
                   tags: |
                       #  tag            latest = yes          ( no dev )
                       type=raw,value=latest,enable=${{ !inputs.DEV_RELEASE }}
@@ -967,11 +967,11 @@ jobs:
                   embed-url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   embed-thumbnail-url: ${{ env.DISCORD_BOT_EMBED_THUMBNAIL }}
                   embed-description: |
-                      ### 📦 ᲼Deploy (${{ env.IMAGE_REGISTRY }}) ᲼${{ job.status == 'success' && '✅' || '❌' }}᲼ › `${{ env.IMAGE_DISTRO }}-${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
+                      ### 📦 ᲼Deploy (${{ env.IMAGE_REGISTRY }}) ᲼${{ job.status == 'success' && '✅' || '❌' }}᲼ › `${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}:${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
                       ${{ inputs.DEV_RELEASE == true && '### ⚠️⚠️ Development / Pre-release ⚠️⚠️' || '' }}
 
-                      A new version of the docker container `${{ env.IMAGE_DISTRO }}` has been released from Github to ${{ env.IMAGE_REGISTRY }} GHCR. The image is available at:
-                      - https://github.com/${{ github.repository }}/pkgs/container/${{ env.IMAGE_DISTRO }}
+                      A new version of the docker container `${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}` has been released from Github to ${{ env.IMAGE_REGISTRY }} GHCR. The image is available at:
+                      - https://github.com/${{ github.repository }}/pkgs/container/${{ env.IMAGE_NAME }}
 
                       - Version: `${{ env.IMAGE_VERSION }}`
                       - Release Type: `${{ inputs.DEV_RELEASE == true && '⚠️⚠️ Development / Pre-release ⚠️⚠️' || 'Stable' }}`
@@ -980,7 +980,7 @@ jobs:
                       - Pull (arm64): `docker pull ghcr.io/${{ env.REGISTRY_REPO_ORG_AUTHOR_LC }}@${{ steps.task_release_gh_push_arm64.outputs.digest }}`
                       - Dry Run: `${{ inputs.DRY_RUN }}`
                       - Source: `${{ env.IMAGE_REGISTRY }}` https://github.com/${{ github.repository }}
-                      - Docker Image: `${{ env.IMAGE_DISTRO }}-${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
+                      - Docker Image: `${{ env.IMAGE_NAME }}-${{ env.IMAGE_DISTRO }}:${{ env.IMAGE_VERSION }}${{ inputs.DEV_RELEASE == true && '-development' || '' }}`
                       - Branch: `${{ github.ref_name }}`
                       - Workflow: `${{ github.workflow }} (#${{github.run_number}})`
                       - Runner: `${{ runner.name }}`
