@@ -404,11 +404,20 @@ sudo chmod +x utils.build.sh
 ```
 
 <br />
+
+Then run the scripts:
+
+```shell
+./utils.fix.sh
+./utils.build.sh
+```
+
+<br />
 <br />
 
 #### `📄 utils.fix.sh`
 
-The `fix permissions` script will ensure that your local copy of this Ubuntu repository has the proper permissions for all files before you create a docker image; or re-upload it to Github on your own repo. It will ensure that the `run` files have the `+x` execute permission. Without this permission; your container will fail when it starts up.
+The `fix permissions` script will ensure that your local copy of this Ubuntu repository has the proper permissions for all files before you create a docker image; or re-upload it to Github or your own registry. It will ensure that the `run` files have the `+x` execute permission. Without this permission; your container will fail when it starts up.
 
 This script is automatically ran when you execute the `📄 utils.build.sh` script to build the container. You do not need to run this script before the build script.
 
@@ -426,16 +435,13 @@ After the permissions are set up; you can now run the scripts in any order, at a
 
 ### Build Images
 
-After completing the steps above; we will now build the [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) image.
+After completing the steps above; we will now build the Ubuntu image in the branch [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble).
 
 <br />
 
-Open the `📄 Dockerfile` and ensure you are pulling the correct Ubuntu base image. This code is located near the top of the `📄 Dockerfile`:
+This docker image contains numerous arguments you can pass which determine what versions of Ubuntu and leaf dependencies will be installed.
 
 ```dockerfile
-ARG ALPINE_VERSION=3.22
-FROM alpine:${ALPINE_VERSION} AS rootfs-stage
-
 ARG IMAGE_REPO_AUTHOR="aetherinox"
 ARG IMAGE_REPO_NAME="docker-base-ubuntu"
 ARG IMAGE_NAME="ubuntu"
