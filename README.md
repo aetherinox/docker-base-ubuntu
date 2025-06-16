@@ -444,6 +444,8 @@ After completing the steps above; we will now build the Ubuntu image in the bran
 
 This docker image contains numerous arguments you can pass which determine what versions of Ubuntu and leaf dependencies will be installed.
 
+<br />
+
 ```dockerfile
 ARG IMAGE_REPO_AUTHOR="aetherinox"
 ARG IMAGE_REPO_NAME="docker-base-ubuntu"
@@ -583,7 +585,6 @@ docker buildx build \
   --tag ghcr.io/aetherinox/ubuntu:24.04 \
   --tag ghcr.io/aetherinox/ubuntu:noble \
   --tag ghcr.io/aetherinox/ubuntu:noble-YYYYMMDD \
-  --tag ghcr.io/aetherinox/ubuntu:noble-amd64 \
   --attest type=provenance,disabled=true \
   --attest type=sbom,disabled=true \
   --output type=docker \
@@ -617,7 +618,6 @@ docker buildx build \
   --tag ghcr.io/aetherinox/ubuntu:24.04 \
   --tag ghcr.io/aetherinox/ubuntu:noble \
   --tag ghcr.io/aetherinox/ubuntu:noble-YYYYMMDD \
-  --tag ghcr.io/aetherinox/ubuntu:noble-arm64 \
   --attest type=provenance,disabled=true \
   --attest type=sbom,disabled=true \
   --output type=docker \
