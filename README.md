@@ -1153,7 +1153,6 @@ If you look at your docker registry, you should see:
 
 <p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/06.png"><br><sub><sup><b>Registry v2:</b> merged <code>amd64</code> and <code>arm64</code> for <code>Stable</code> release; using <code>docker manifest create</code></sup></sub></p>
 
-
 <br />
 
 For the **development** release:
@@ -1184,6 +1183,8 @@ sha256:a0ec1af9d2d9f4c2f45ab1f0cf9c5d60f8dc2660b1eb1011a0636b971a804c53
 
 If you look at your docker registry, you should see:
 
+<br />
+
 <p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/07.png"><br><sub><sup><b>Registry v2:</b> merged <code>amd64</code> and <code>arm64</code> for <code>Development</code> release; using <code>docker manifest create</code></sup></sub></p>
 
 <br />
@@ -1192,7 +1193,10 @@ If you look at your docker registry, you should see:
 > If you push the manifest to your online registry, and notice that the image contains duplicate architecture images; you need to remove the manifest and re-create it using:
 >
 > ```shell
-> docker manifest rm ghcr.io/aetherinox/ubuntu:nobel
+> docker manifest rm ghcr.io/aetherinox/ubuntu:latest
+> docker manifest rm ghcr.io/aetherinox/ubuntu:nobel-amd64
+> docker manifest rm ghcr.io/aetherinox/ubuntu:nobel-arm64
+> docker manifest rm ghcr.io/aetherinox/ubuntu:nobel-development
 > ```
 
 <br />
@@ -1221,9 +1225,7 @@ docker manifest push ghcr.io/aetherinox/ubuntu:noble-development
 
 <br />
 
-If you go back to your registry; you should now see multiple new entries, all with different tags. Two of the images are your old `amd64` and `arm64` images, and then you should have your official one with the four tags specified above. You can delete the two original images if you do not want them.
-
-<p align="center"><img style="width: 80%;text-align: center;" src="docs/img/core/02.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>amd64</code> and <code>arm64</code> images, and merged containers with both architectures</sup></sub></p>
+You should now have your generated images, with all architectures combined into a single image that others can pull.
 
 <br />
 <br />
