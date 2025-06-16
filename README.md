@@ -493,12 +493,14 @@ docker buildx create --driver docker-container --name container --bootstrap --us
 
 <br />
 
-<sub><sup>Optional - </sup></sub> If you first need to remove the provider container because you created it previously, run the command:
-
-```shell
-docker buildx rm container
-docker buildx create --driver docker-container --name container --bootstrap --use
-```
+> [!NOTE]
+> **Optional:**
+> If you first need to remove the provider container because you created it previously, run the command:
+>
+> ```shell
+> docker buildx rm container
+> docker buildx create --driver docker-container --name container --bootstrap --use
+> ```
 
 <br />
 
@@ -562,7 +564,7 @@ You are ready to build the Ubuntu docker image, run the command for your platfor
 
 ##### amd64
 
-Creates the ubuntu `amd64` docker image:
+Creates the Ubuntu `amd64` docker image:
 
 ```shell
 # Build ubuntu amd64
@@ -596,7 +598,7 @@ docker buildx build \
 
 ##### arm64
 
-Creates the ubuntu `arm64` docker image:
+Creates the Ubuntu `arm64` docker image:
 
 ```shell
 # Build ubuntu arm64
@@ -613,6 +615,7 @@ docker buildx build \
   --tag ghcr.io/aetherinox/ubuntu:noble \
   --tag ghcr.io/aetherinox/ubuntu:noble-YYYYMMDD \
   --tag ghcr.io/aetherinox/ubuntu:noble-arm64 \
+  --attest type=provenance,disabled=true \
   --attest type=sbom,disabled=true \
   --output type=docker \
   --builder default \
@@ -636,7 +639,6 @@ After building the image, you can now use the image either with `🗔 docker run
 
 - [🗔 Docker Run](#docker-run-1)
 - [📄 Docker Compose](#docker-compose-1)
-
 
 <br />
 <br />
@@ -664,12 +666,14 @@ docker buildx create --driver docker-container --name container --bootstrap --us
 
 <br />
 
-<sub><sup>Optional - </sup></sub> If you first need to remove the container because you created it previously, run the command:
-
-```shell
-docker buildx rm container
-docker buildx create --driver docker-container --name container --bootstrap --use
-```
+> [!NOTE]
+> **Optional:**
+> If you first need to remove the provider container because you created it previously, run the command:
+>
+> ```shell
+> docker buildx rm container
+> docker buildx create --driver docker-container --name container --bootstrap --use
+> ```
 
 <br />
 
@@ -759,10 +763,10 @@ Once the emulator is installed; we will now build two images. When building thes
 > 
 > | Registry | Tag |
 > | --- | --- |
-> | Dockerhub | `--tag aetherinox/ubuntu:24.04-amd64`<br>`--tag aetherinox/ubuntu:24.04-arm64` |
-> | Github (GHCR) | `--tag ghcr.io/aetherinox/ubuntu:24.04-amd64`<br>`--tag ghcr.io/aetherinox/ubuntu:24.04-arm64` |
-> | Registry v2 | `--tag registry.domain.lan/aetherinox/ubuntu:24.04-amd64`<br>`--tag registry.domain.lan/aetherinox/ubuntu:24.04-arm64` |
-> | Gitea | `--tag git.domain.lan/aetherinox/ubuntu:24.04-amd64`<br>`--tag git.domain.lan/aetherinox/ubuntu:24.04-arm64` |
+> | Dockerhub | `--tag aetherinox/ubuntu:noble-amd64`<br>`--tag aetherinox/ubuntu:noble-arm64` |
+> | Github (GHCR) | `--tag ghcr.io/aetherinox/ubuntu:noble-amd64`<br>`--tag ghcr.io/aetherinox/ubuntu:noble-arm64` |
+> | Registry v2 | `--tag registry.domain.lan/aetherinox/ubuntu:noble-amd64`<br>`--tag registry.domain.lan/aetherinox/ubuntu:noble-arm64` |
+> | Gitea | `--tag git.domain.lan/aetherinox/ubuntu:noble-amd64`<br>`--tag git.domain.lan/aetherinox/ubuntu:noble-arm64` |
 
 <br />
 
@@ -777,7 +781,7 @@ After we build these two images and push them to a registry online; merge them i
 
 ##### Stable - amd64
 
-Creates the ubuntu **Stable** release `amd64` docker image:
+Creates the Ubuntu **Stable** release `amd64` docker image:
 
 ```shell
 # Build ubuntu amd64 - (stable release)
@@ -851,7 +855,7 @@ docker buildx build \
   --build-arg IMAGE_VERSION=24.04 \
   --build-arg IMAGE_RELEASE=development \
   --build-arg IMAGE_REGISTRY=github \
-  --tag ghcr.io/aetherinox/ubuntu:development-amd64 \
+  --tag ghcr.io/aetherinox/ubuntu:noble-development-amd64 \
   --attest type=provenance,disabled=true \
   --attest type=sbom,disabled=true \
   --output type=docker \
@@ -882,7 +886,7 @@ docker buildx build \
   --build-arg IMAGE_VERSION=24.04 \
   --build-arg IMAGE_RELEASE=development \
   --build-arg IMAGE_REGISTRY=github \
-  --tag ghcr.io/aetherinox/ubuntu:development-arm64 \
+  --tag ghcr.io/aetherinox/ubuntu:noble-development-arm64 \
   --attest type=provenance,disabled=true \
   --attest type=sbom,disabled=true \
   --output type=docker \
@@ -903,10 +907,10 @@ After completing the `docker buildx` commands above; you should now have a few n
 
 <br />
 
-- `--tag ghcr.io/aetherinox/ubuntu:24.04-amd64`
-- `--tag ghcr.io/aetherinox/ubuntu:24.04-arm64`
-- `--tag ghcr.io/aetherinox/ubuntu:development-amd64`
-- `--tag ghcr.io/aetherinox/ubuntu:development-arm64`
+- `--tag ghcr.io/aetherinox/ubuntu:noble-amd64`
+- `--tag ghcr.io/aetherinox/ubuntu:noble-arm64`
+- `--tag ghcr.io/aetherinox/ubuntu:noble-development-amd64`
+- `--tag ghcr.io/aetherinox/ubuntu:noble-development-arm64`
 
 <br />
 
@@ -928,15 +932,15 @@ If you are building the **stable release** images; you should see the following:
 You can also get the hash digests by running the commands:
 
 ```shell
-$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:24.04-amd64
+$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-amd64
 
-Name:      ghcr.io/aetherinox/ubuntu:24.04-amd64
+Name:      ghcr.io/aetherinox/ubuntu:noble-amd64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
 Digest:    sha256:657fd74ebfa6577c069d1d74fec291b8b5309f762e7ad2d0d14b51de64a841b8
 
-$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:24.04-arm64
+$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-arm64
 
-Name:      ghcr.io/aetherinox/ubuntu:24.04-arm64
+Name:      ghcr.io/aetherinox/ubuntu:noble-arm64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
 Digest:    sha256:2750bb927d8e4434d21c9f9941632310b98bbb2729389af236888ebbc4d75dda
 ```
@@ -950,7 +954,7 @@ If you are building the **development release** images; you should see the follo
 
 <br />
 
-<p align="center"><img style="width: 70%;text-align: center;" src="docs/img/core/04.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>development-amd64</code> and <code>development-arm64</code> images</sup></sub></p>
+<p align="center"><img style="width: 70%;text-align: center;" src="docs/img/core/04.png"><br><sub><sup><b>Registry v2:</b> Newly created <code>noble-development-amd64</code> and <code>noble-development-arm64</code> images</sup></sub></p>
 
 <br />
 
@@ -959,15 +963,15 @@ You can also get the hash digests by running the commands:
 <br />
 
 ```shell
-$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:development-amd64
+$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-development-amd64
 
-Name:      ghcr.io/aetherinox/ubuntu:development-amd64
+Name:      ghcr.io/aetherinox/ubuntu:noble-development-amd64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
 Digest:    sha256:8f36385a28c8f6eb7394d903c9a7a2765b06f94266b32628389ee9e3e3d7e69d
 
-$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:development-arm64
+$ docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-development-arm64
 
-Name:      ghcr.io/aetherinox/ubuntu:development-arm64
+Name:      ghcr.io/aetherinox/ubuntu:noble-development-arm64
 MediaType: application/vnd.docker.distribution.manifest.v2+json
 Digest:    sha256:c719ccb034946e3f0625003f25026d001768794e38a1ba8aafc9146291d548c5
 ```
@@ -983,16 +987,16 @@ Digest:    sha256:c719ccb034946e3f0625003f25026d001768794e38a1ba8aafc9146291d548
 > ```shell
 > $ docker images --all --no-trunc | grep aetherinox
 > 
-> ghcr.io/aetherinox/ubuntu   24.04-arm64        sha256:bb425429e98ab467fd91474701da2e5c0a7cb4a5f218a710d950eb0ff595486c   3 minutes ago   38.8MB
+> ghcr.io/aetherinox/ubuntu   noble-arm64        sha256:bb425429e98ab467fd91474701da2e5c0a7cb4a5f218a710d950eb0ff595486c   3 minutes ago   38.8MB
 > 
-> ghcr.io/aetherinox/ubuntu   24.04-amd64        sha256:dea4cb91379dba289d8d3e8842d4fb7b7857faa7f3d02d5b9a043a1ee58e61d7   4 minutes ago   27.3MB
+> ghcr.io/aetherinox/ubuntu   noble-amd64        sha256:dea4cb91379dba289d8d3e8842d4fb7b7857faa7f3d02d5b9a043a1ee58e61d7   4 minutes ago   27.3MB
 > ```
 >
 > To get the correct sha256 digest, use:
-> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:24.04-amd64`
-> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:24.04-arm64`
-> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:development-amd64`
-> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:development-arm64`
+> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-amd64`
+> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-arm64`
+> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-development-amd64`
+> - `docker buildx imagetools inspect ghcr.io/aetherinox/ubuntu:noble-development-arm64`
 > 
 
 <br />
@@ -1035,12 +1039,12 @@ For the **development** releases, use:
 # #
 
 docker buildx imagetools create \
-  --tag ghcr.io/aetherinox/ubuntu:development \
+  --tag ghcr.io/aetherinox/ubuntu:noble-development \
   sha256:2750bb927d8e4434d21c9f9941632310b98bbb2729389af236888ebbc4d75dda \
   sha256:657fd74ebfa6577c069d1d74fec291b8b5309f762e7ad2d0d14b51de64a841b8
 
 [+] Building 0.1s (1/1) FINISHED
- => [internal] pushing ghcr.io/aetherinox/ubuntu:development   0.1s
+ => [internal] pushing ghcr.io/aetherinox/ubuntu:noble-development   0.1s
 ```
 
 <br />
@@ -1068,8 +1072,8 @@ In this example, we take the existing two files we created earlier, and merge th
 ```shell
 # Example 1 (using tag)
 docker manifest create ghcr.io/aetherinox/ubuntu:latest \
-    --amend ghcr.io/aetherinox/ubuntu:24.04-amd64 \
-    --amend ghcr.io/aetherinox/ubuntu:24.04-arm64
+    --amend ghcr.io/aetherinox/ubuntu:noble-amd64 \
+    --amend ghcr.io/aetherinox/ubuntu:noble-arm64
 
 # Example 2 (using sha256 hash)
 docker manifest create ghcr.io/aetherinox/ubuntu:latest \
