@@ -408,6 +408,7 @@ RUN \
             sudo \
             nano \
             ca-certificates \
+            openssl \
             catatonit \
             coreutils \
             cron \
