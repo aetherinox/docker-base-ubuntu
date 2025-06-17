@@ -85,22 +85,19 @@ declare -A icon=(
 )
 
 # #
-#   envfile > define
+#   keys > define
 # #
 
-if find /run/s6/container_environment/FILE__* -maxdepth 1 > /dev/null 2>&1; then
-    for FILENAME in /run/s6/container_environment/FILE__*; do
-            SECRETFILE=$(cat "${FILENAME}")
-            if [[ -f ${SECRETFILE} ]]; then
-                FILESTRIP=${FILENAME//FILE__/}
-                if [[ $(tail -n1 "${SECRETFILE}" | wc -l) != 0 ]]; then
-                    printf '%-29s %-65s\n' "  ${c[orange1]}Env${c[end]}" "${c[end]}Your secret › ${c[orange1]}${FILENAME##*/}${c[end]}"
-                    printf '%-29s %-65s\n' "  ${c[orange1]}   ${c[end]}" "${c[end]}contains a trailing newline and may not work${c[end]}"
-                fi
-                cat "${SECRETFILE}" >"${FILESTRIP}"
-                printf '%-29s %-65s\n' "  ${c[bluel]}Env${c[end]}" "${c[end]}${c[bluel]}${FILESTRIP##*/}${c[end]} set from ${c[bluel]}${FILENAME##*/}${c[end]}"
-            else
-                printf '%-29s %-65s\n' "  ${c[redl]}Env${c[end]}" "${c[end]}Cannot find secret in › ${c[redl]}${FILENAME##*/}${c[end]}"
-            fi
-    done
+SUBJECT="/C=NA/ST=NA/L=NA/O=Aetherinox/OU=Docker Image/CN=*"
+if [[ -f /config/keys/cert.key && -f /config/keys/cert.crt ]]; then
+    printf '%-29s %-65s\n' "  ${c[bluel]}SSL${c[end]}" "${c[end]}Using existing keys found in › ${c[greenl]}/config/keys${c[end]}"
+else
+    printf '%-29s %-65s\n' "  ${c[bluel]}SSL${c[end]}" "${c[end]}Generating self-signed keys in › ${c[greenl]}/config/keys${c[end]}"
+    rm -f \
+        /config/keys/cert.key \
+        /config/keys/cert.crt || true
+
+    mkdir -p /config/keys
+
+    OUT=$(openssl req -new -x509 -days 3650 -nodes -out /config/keys/cert.crt -keyout /config/keys/cert.key -subj "$SUBJECT" 2>/dev/null)
 fi
