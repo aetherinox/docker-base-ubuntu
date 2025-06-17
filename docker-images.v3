@@ -4,7 +4,7 @@
 # #
 #   @version        3
 #   @file           docker-images.v3
-#   @date           12-18-2024
+#   @date           06-16-2025
 #   @usage          makes use of s6-overlay for docker containers
 #                   https://github.com/just-containers/s6-overlay
 # #
@@ -119,7 +119,8 @@ fi
 #   Tamper check
 # #
 
-tamper_check() {
+tamper_check()
+{
     # Tamper check custom service locations
     if [[ -d "${SERVICES_DIR}" ]] && [[ -n "$(find ${SERVICES_DIR}/* ! -user root 2>/dev/null)" ]]; then
 echo "╔═════════════════════════════════════════════════════════════════════════╗
@@ -174,7 +175,8 @@ echo "╔═══════════════════════�
 #   Custom Services
 # #
 
-process_custom_services() {
+process_custom_services()
+{
 
     # #
     #   Remove all existing custom services before continuing to ensure
@@ -219,7 +221,8 @@ process_custom_services() {
 #   Create with-contenv alias with umask support
 # #
 
-create_with_contenv_alias() {
+create_with_contenv_alias()
+{
     if [[ ! -f /command/with-contenv ]]; then
         echo "/command/with-contenv not found, skipping alias creation"
         return
@@ -243,7 +246,8 @@ create_with_contenv_alias() {
 #   Check for curl
 # #
 
-curl_check() {
+curl_check()
+{
     if [[ ! -f /usr/bin/curl ]] || [[ ! -f /usr/bin/jq ]]; then
         exec_info "Curl/JQ was not found on this system for Docker mods installing"
         if [[ -f /usr/bin/apt ]]; then
@@ -276,17 +280,20 @@ curl_check() {
 #   Define > Message Types
 # #
 
-exec_info() {
+exec_info()
+{
     local MSG=$*
     echo "[mod-init] $MSG"
 }
 
-exec_err() {
+exec_err()
+{
     local MSG=$*
     echo "[mod-init] (ERROR) $MSG"
 }
 
-exec_debug() {
+exec_debug()
+{
     local MSG=$*
     if [[ ${DOCKER_MODS_DEBUG,,} = "true" ]]; then echo "[mod-init] (DEBUG) $MSG"; fi
 }
@@ -297,7 +304,8 @@ exec_debug() {
 #   Use different filtering depending on the URL
 # #
 
-get_blob_sha() {
+get_blob_sha()
+{
     MULTIDIGEST=$(curl  -f --retry 10 --retry-max-time 60 --retry-connrefused \
         ${CURL_NOISE_LEVEL} \
         --location \
@@ -354,7 +362,8 @@ get_blob_sha() {
 #   Get > Auth URL
 # #
 
-get_auth_url() {
+get_auth_url()
+{
     local auth_header
     local realm_url
     local service
@@ -385,7 +394,8 @@ get_auth_url() {
 #   Get > Architecture
 # #
 
-get_arch(){
+get_arch()
+{
     local arch
 
     if [[ -f /sbin/apk ]]; then
@@ -412,7 +422,8 @@ get_arch(){
 #   Run > main
 # #
 
-runtime() {
+runtime()
+{
     exec_info "Running Docker Modification Logic"
     exec_debug "Running in debug mode"
     exec_debug "Mod script version ${MOD_SCRIPT_VER}"
@@ -618,7 +629,8 @@ runtime() {
 #   run > local
 # #
 
-runtime_local() {
+runtime_local()
+{
     exec_info "Running Local Docker Modification Logic"
     for DOCKER_MOD in $(echo "${DOCKER_MODS}" | tr '|' '\n'); do
 
@@ -715,7 +727,8 @@ runtime_local() {
 #   Run > branding
 # #
 
-run_branding() {
+run_branding()
+{
   cat <<-EOF | tee /run/branding /etc/s6-overlay/s6-rc.d/init-adduser/branding > /dev/null 2>&1
 ──────────────────────────────────────────────────────────────────────────────────────────
                              Linux Alpine - Base Image
