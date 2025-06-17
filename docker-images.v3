@@ -731,7 +731,7 @@ run_branding()
 {
   cat <<-EOF | tee /run/branding /etc/s6-overlay/s6-rc.d/init-adduser/branding > /dev/null 2>&1
 ──────────────────────────────────────────────────────────────────────────────────────────
-                             Linux Alpine - Base Image
+                              Aetherinox - Base Image
 ──────────────────────────────────────────────────────────────────────────────────────────
 	EOF
 }
