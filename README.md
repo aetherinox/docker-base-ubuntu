@@ -224,10 +224,6 @@ If you attempt to build your Ubuntu docker image on Linux, and have windows CRLF
 
 <br />
 
-For the branches [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) and your main app image, you can use the following recursive commands:
-
-<br />
-
 > [!CAUTION]
 > Be careful using the command to change **ALL** files. You should **NOT** change the files in your `📁 .git` folder, otherwise you will corrupt your git indexes.
 >
@@ -236,6 +232,10 @@ For the branches [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker
 > ```shell
 > git reset --hard origin/main
 > ```
+
+<br />
+
+For the branches [🔆 docker/ubuntu-noble](https://github.com/aetherinox/docker-base-ubuntu/tree/docker/ubuntu-noble) and your main app image, you can use the following recursive commands:
 
 <br />
 
